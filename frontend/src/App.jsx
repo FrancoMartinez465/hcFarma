@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProductoList from "./pages/ProductoList";
 import Horario from "./pages/Horario";
 import Resenas from "./pages/Resenas";
@@ -7,7 +7,7 @@ import Resenas from "./pages/Resenas";
 export default function App() {
   return (
     <div className="app-with-header">
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<ProductoList />} />
           <Route path="/inicio" element={<ProductoList />} />
@@ -17,7 +17,7 @@ export default function App() {
           <Route path="/resenas" element={<Resenas />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }
