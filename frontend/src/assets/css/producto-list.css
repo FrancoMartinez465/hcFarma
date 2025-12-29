@@ -1,0 +1,73 @@
+/* Estilos para la lista de productos (vista tipo marketplace) */
+.producto-list{ max-width:1200px; margin:12px auto; padding:12px; box-sizing:border-box }
+.pl-controls{ display:flex; gap:12px; align-items:center; margin-bottom:12px; flex-wrap:wrap }
+.pl-search{ flex:1 1 360px }
+.pl-search input{ width:100%; padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); min-width:160px; max-width:720px; background:var(--bg-main) }
+.pl-branch{ flex:0 0 auto }
+.pl-branch select{ padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-main); color:inherit }
+.pl-count{ margin-left:auto; color:var(--text-secondary); font-size:14px }
+
+.pl-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:18px }
+.pl-card{ background:var(--bg-main); border-radius:8px; box-shadow:0 8px 24px rgba(20,62,110,0.04); border:1px solid var(--border-color); overflow:hidden; display:flex; flex-direction:column }
+.pl-thumb{ background:linear-gradient(180deg,var(--bg-main), #f4f7fb); display:flex; align-items:center; justify-content:center; height:140px }
+.pl-thumb img{ max-width:120px; max-height:120px; object-fit:contain }
+.pl-info{ padding:10px; display:flex; flex-direction:column; gap:6px }
+.pl-name{ font-weight:700; font-size:15px; color:#0f172a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+.pl-price{ color:var(--hc-accent); font-weight:800; font-size:15px }
+.pl-branches{ font-size:13px; color:var(--text-secondary) }
+
+.pl-actions{ margin-top:6px }
+.pl-actions .btn{ padding:8px 12px; border-radius:6px }
+.pl-actions .btn.btn-primary{ background:var(--hc-primary); color:var(--bg-main); border:1px solid rgba(255,255,255,0.06) }
+.pl-actions .btn.btn-primary:hover{ background:var(--hc-primary-dark) }
+
+/* WhatsApp icon small next to button text */
+.pl-actions .wh-icon{ width:36px; height:36px; object-fit:contain; vertical-align:middle; margin-right:10px }
+.pl-actions .btn .wh-icon { display:inline-block }
+
+
+@media (max-width:720px){
+  .producto-list{ padding:8px }
+  .pl-controls{ gap:8px }
+  .pl-count{ width:100%; margin-left:0 }
+  .pl-grid{ grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) }
+  .pl-search{ flex:1 1 220px }
+  .pl-actions .wh-icon{ width:28px; height:28px }
+}
+
+@media (min-width:1024px){
+  /* En pantallas grandes queremos tarjetas más grandes y más separación */
+  .pl-grid{ grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap:24px }
+  .pl-thumb{ height:160px }
+  .pl-thumb img{ max-width:140px; max-height:140px }
+  .pl-name{ font-size:15px }
+}
+
+/* Desktop: centrar la lista y crear márgenes laterales vacíos como en la referencia */
+@media (min-width:1280px){
+  .producto-list{ max-width:820px; margin-left:auto; margin-right:auto }
+}
+
+/* Tablet: 2 columnas */
+@media (min-width:720px) and (max-width:1023px) {
+  .pl-grid{ grid-template-columns: repeat(2, 1fr); gap:20px }
+  .pl-card{ flex-direction:column }
+  .pl-thumb{ height:140px }
+  .pl-thumb img{ max-width:120px; max-height:120px }
+}
+
+/* Desktop: 3 columnas */
+@media (min-width:1024px){
+  .pl-grid{ grid-template-columns: repeat(3, 1fr); gap:24px }
+  .pl-card{ flex-direction:column }
+  .pl-thumb{ height:160px }
+  .pl-thumb img{ max-width:140px; max-height:140px }
+  .producto-list{ max-width:1200px; margin-left:auto; margin-right:auto }
+}
+
+@media (max-width:480px){
+  .pl-search input{ min-width:120px }
+  .pl-branch select{ padding:7px 8px }
+  .pl-thumb{ height:100px }
+  .pl-actions .wh-icon{ width:22px; height:22px }
+}

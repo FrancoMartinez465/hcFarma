@@ -1,0 +1,20 @@
+/* Footer styles */
+.pie-footer{ background:#0f172a; color:#e6eef6; padding:28px 12px 8px; margin-top:28px }
+.pie-inner{ max-width:1200px; margin:0 auto; display:flex; gap:24px; flex-wrap:wrap; align-items:flex-start }
+.pie-section{ flex:1 1 200px; min-width:180px }
+.pie-section h4{ margin:0 0 8px 0; color:#fff }
+.pie-line{ margin:6px 0 }
+.pie-line a{ color:#e6eef6; text-decoration:none }
+.pie-line a:hover{ text-decoration:underline }
+.socials{ display:flex; gap:10px }
+.social{ background:#0ea5a4; color:#042026; padding:6px 10px; border-radius:6px; text-decoration:none; font-weight:700 }
+.social:hover{ opacity:.95 }
+.pie-links a{ display:block; color:#cbd5e1; text-decoration:none; margin:6px 0 }
+.pie-links a:hover{ color:#fff }
+.pie-bottom{ max-width:1200px; margin:14px auto 0; color:#94a3b8; font-size:13px; text-align:center }
+
+@media (max-width:720px){
+  .pie-inner{ padding:0 10px }
+  .pie-section{ min-width:100%; }
+  .social{ padding:8px 12px }
+}

@@ -1,0 +1,82 @@
+.encabezado{ position:fixed; top:0; left:0; right:0; z-index:9999; background:var(--hc-primary); color:white; padding:8px 0; box-shadow:0 3px 12px rgba(0,0,0,0.06);
+  /* Variables para control responsive de espacios */
+  --enc-info-margin: 4px; /* margen entre logo y texto (varía según ancho) */
+  --enc-actions-right: 12px; /* separación desde la derecha para el grupo de botones */
+  --enc-reserve: calc(var(--enc-actions-right) + 44px); /* espacio reservado en interior */
+  /* Variables de color para botones (puedes ajustarlas fácilmente aquí) */
+  --enc-btn-primary-bg: #06b6d4; /* cyan suave */
+  --enc-btn-primary-color: #002028; /* texto oscuro sobre cyan */
+  --enc-btn-ghost-bg: #34d399; /* verde suave */
+  --enc-btn-ghost-color: #062230; /* texto oscuro para contraste */
+  --enc-btn-ghost-border: rgba(0,0,0,0.06);
+  --enc-btn-review-bg: #f59e0b; /* ámbar suave */
+  --enc-btn-review-color: #062230; /* texto oscuro para review */
+}
+.encabezado-inner{ max-width:1200px; margin:0; padding:0 20px; padding-right:var(--enc-reserve); display:flex; align-items:center; height:72px }
+.encabezado-right{ display:flex; align-items:center; gap:12px; width:100% }
+.encabezado-logo{ height:56px; width:auto; border-radius:6px; box-shadow:none; image-rendering:optimizeQuality; -webkit-backface-visibility:hidden }
+.encabezado-info{ display:flex; flex-direction:column; text-align:left; margin-left:var(--enc-info-margin); min-width:0 }
+.encabezado-name, .encabezado-msg{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+.encabezado-name{ font-weight:800; color:white; font-size:22px; letter-spacing:0.3px }
+.encabezado-msg{ font-size:13px; color:rgba(255,255,255,0.95); margin-top:2px }
+.encabezado-actions{ position:absolute; right:var(--enc-actions-right); top:50%; transform:translateY(-50%); display:flex; gap:8px; align-items:center; z-index:10000; flex-wrap:wrap }
+.encabezado-actions .btn{ margin-left:0; padding:8px 14px; font-size:14px }
+
+/* Colores de los botones dentro del encabezado */
+.encabezado-actions .btn.btn-primary{
+  background: var(--enc-btn-primary-bg);
+  color: var(--enc-btn-primary-color);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 8px rgba(6,182,212,0.06);
+  transition: background .12s ease, transform .08s ease;
+}
+.encabezado-actions .btn.btn-primary:hover{ background: color-mix(in srgb, var(--enc-btn-primary-bg) 85%, black 15%); transform: translateY(-1px) }
+.encabezado-actions .btn.btn-ghost{
+  background: var(--enc-btn-ghost-bg);
+  color: var(--enc-btn-ghost-color);
+  border: 1px solid var(--enc-btn-ghost-border);
+}
+.encabezado-actions .btn.btn-ghost:hover{ background: rgba(255,255,255,0.06) }
+
+.encabezado-actions .btn.btn-review{
+  background: var(--enc-btn-review-bg);
+  color: var(--enc-btn-review-color);
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow: 0 2px 6px rgba(245,158,11,0.06);
+}
+.encabezado-actions .btn.btn-review:hover{ filter: brightness(.96); transform: translateY(-1px) }
+
+@media (max-width:720px){
+  .encabezado{ --enc-info-margin: 3px; --enc-actions-right: 10px; --enc-reserve: calc(var(--enc-actions-right) + 40px) }
+  .encabezado-inner{ height:64px; padding:0 10px }
+  .encabezado-logo{ height:48px }
+  .encabezado-name{ font-size:18px }
+  .encabezado-msg{ font-size:12px }
+  .encabezado-actions .btn{ padding:7px 10px; font-size:13px }
+  .encabezado-actions{ position:static; transform:none; margin-left:auto; gap:6px }
+}
+
+@media (max-width:480px){
+  .encabezado{ --enc-info-margin: 0px; --enc-actions-right: 4px; --enc-reserve: calc(var(--enc-actions-right) + 44px) }
+  .encabezado-logo{ height:40px }
+  .encabezado-info{ display:flex; min-width:0 }
+  .encabezado-name{ font-size:16px; max-width:120px }
+  .encabezado-msg{ font-size:11px; max-width:120px }
+  .encabezado-actions .btn{ padding:7px 8px; font-size:12px }
+  .encabezado-inner{ padding:0 6px }
+}
+
+/* Extra small phones (S): ajustar aún más */
+@media (max-width:360px){
+  .encabezado{ --enc-info-margin: 0px; --enc-actions-right: 2px; --enc-reserve: calc(var(--enc-actions-right) + 40px) }
+  .encabezado-name{ font-size:15px }
+  .encabezado-msg{ font-size:10px }
+}
+
+/* Large screens: dar más separación */
+@media (min-width:1280px){
+  .encabezado{ --enc-info-margin: 6px; --enc-actions-right: 16px; --enc-reserve: calc(var(--enc-actions-right) + 56px) }
+}
+
+/* Compensar header fijo: aplicar padding-top al main cuando el app incluye el header */
+.app-with-header .hc-main{ padding-top:80px }

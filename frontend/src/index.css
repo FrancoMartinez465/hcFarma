@@ -1,0 +1,18 @@
+:root{
+	/* Paleta HC */
+	/* Ajuste de paleta (más neutra y cómoda) */
+	--hc-primary: #2B6CB0; /* azul principal cómodo */
+	--hc-primary-dark: #1E4E8A; /* azul oscuro para hover */
+	--hc-accent: #4EA1FF; /* azul claro para acciones secundarias */
+	--hc-accent-dark: #3A8BE0;
+	--hc-gold: #D4B96A; /* dorado suave, menos saturado */
+
+	--bg-main: #FFFFFF; /* blanco limpio */
+	--bg-secondary: #F4F6F8; /* fondo secundario */
+	--border-color: #DCE1E6; /* bordes / líneas */
+	--text-secondary: #6B7280; /* texto secundario */
+}
+
+html,body,#root{ height:100%; }
+body{ margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: var(--bg-secondary) }
+

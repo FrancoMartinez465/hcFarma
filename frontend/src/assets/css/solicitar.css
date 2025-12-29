@@ -1,0 +1,19 @@
+/* Estilos para modal de solicitud */
+.solicitar-overlay{ position:fixed; inset:0; background:rgba(2,6,23,0.6); display:flex; align-items:center; justify-content:center; z-index:20000 }
+.solicitar-card{ background:#fff; padding:18px; border-radius:8px; width:420px; max-width:92%; box-shadow:0 8px 30px rgba(2,6,23,0.3) }
+.solicitar-card h3{ margin:0 0 10px 0 }
+.solicitar-form label{ display:block; margin-top:8px; font-size:13px }
+.solicitar-form input, .solicitar-form select{ width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid #d1d5db }
+.solicitar-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:12px }
+.solicitar-actions .btn{ padding:8px 12px; border-radius:6px; border:1px solid rgba(0,0,0,0.06); background:#f1f5f9 }
+.solicitar-actions .btn-primary{ background:#06b6d4; color:#022; border:0 }
+
+/* Icono whatsapp en modal */
+.wh-icon-modal{ width:34px; height:34px; object-fit:contain; margin-right:8px; vertical-align:middle }
+
+@media (max-width:480px){
+  .solicitar-card{ width: 96%; padding:14px }
+  .solicitar-actions{ flex-direction:column-reverse; }
+  .solicitar-actions .btn{ width:100% }
+  .wh-icon-modal{ width:24px; height:24px }
+}
