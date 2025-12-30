@@ -1,8 +1,15 @@
 /* Estilos para la lista de productos (vista tipo marketplace) */
 .producto-list{ max-width:1200px; margin:12px auto; padding:12px; box-sizing:border-box }
 .pl-controls{ display:flex; gap:12px; align-items:center; margin-bottom:12px; flex-wrap:wrap }
+.pl-filter{ display:flex; gap:10px; align-items:center; margin-bottom:16px; width:100%; }
 .pl-search{ flex:1 1 360px }
-.pl-search input{ width:100%; padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); min-width:160px; max-width:720px; background:var(--bg-main) }
+.pl-search input{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid rgba(15,23,42,0.08); min-width:160px; max-width:720px; background:linear-gradient(180deg,#ffffff,#fbfdff); box-shadow:0 6px 18px rgba(8,30,70,0.04); transition:box-shadow .18s ease, border-color .12s ease }
+.pl-search input:focus{ outline:none; box-shadow:0 8px 28px rgba(8,30,70,0.06); border-color:var(--hc-primary) }
+.pl-filter-actions{ display:flex; gap:8px }
+.pl-filter .btn{ padding:9px 14px; border-radius:10px; font-weight:600 }
+.pl-filter .btn.btn-primary{ background:var(--hc-primary); color:var(--bg-main); border:1px solid rgba(255,255,255,0.06) }
+.pl-filter .btn:hover{ transform:translateY(-1px); box-shadow:0 8px 20px rgba(11,86,128,0.06) }
+.pl-filter .btn[disabled]{ opacity:0.6; cursor:not-allowed }
 .pl-branch{ flex:0 0 auto }
 .pl-branch select{ padding:8px 10px; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-main); color:inherit }
 .pl-count{ margin-left:auto; color:var(--text-secondary); font-size:14px }

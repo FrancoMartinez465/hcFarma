@@ -9,10 +9,14 @@ export default function SolicitarModal({ product, onClose }) {
 
   // Obtener nombre del producto desde WordPress
   const productName = useMemo(() => {
-    return (
-      product?.title?.rendered?.replace(/<[^>]*>/g, "") ||
-      "Producto"
-    );
+    const html = product?.title?.rendered || "";
+    if (!html) return "Producto";
+
+    // Decodificar entidades HTML y eliminar tags
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    const decoded = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ").trim();
+    return decoded || "Producto";
   }, [product]);
 
   function parseHM(hm) {

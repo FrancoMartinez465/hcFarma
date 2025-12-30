@@ -10,6 +10,8 @@ export default function ProductoList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [modalProduct, setModalProduct] = useState(null);
+  const [query, setQuery] = useState("");
+  const [activeQuery, setActiveQuery] = useState("");
 
   useEffect(() => {
     fetch(
@@ -36,6 +38,28 @@ export default function ProductoList() {
   const removeImages = (html) =>
     html?.replace(/<figure[\s\S]*?<\/figure>/gi, "");
 
+  // Decodifica HTML entities y devuelve texto plano en minúsculas
+  const decodeToText = (html) => {
+    if (!html) return "";
+    try {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      return (div.textContent || div.innerText || "").replace(/\u00A0/g, " ").toLowerCase();
+    } catch (e) {
+      return String(html).replace(/<[^>]+>/g, "").toLowerCase();
+    }
+  };
+
+  const filteredProducts = products.filter((p) =>
+    decodeToText(p.title?.rendered).includes(activeQuery.trim().toLowerCase())
+  );
+
+  const handleSearch = () => setActiveQuery(query);
+  const handleClear = () => {
+    setQuery("");
+    setActiveQuery("");
+  };
+
   return (
     <div className="hc-container">
       <Encabezado />
@@ -50,25 +74,48 @@ export default function ProductoList() {
       <main className="hc-main">
         <section className="producto-list">
 
+          <div className="pl-filter">
+            <div className="pl-search">
+              <input
+                type="text"
+                placeholder="Buscar producto..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              />
+            </div>
+
+            <div className="pl-filter-actions">
+              <button className="btn btn-primary" onClick={handleSearch}>
+                Buscar
+              </button>
+              <button className="btn" onClick={handleClear}>
+                Limpiar
+              </button>
+            </div>
+          </div>
+
           {loading && <p>Cargando productos...</p>}
           {error && <p>Error: {error}</p>}
 
+          {!loading && filteredProducts.length === 0 && (
+            <p>No se encontraron productos.</p>
+          )}
+
           <div className="pl-grid">
-            {products.map((p) => {
+            {filteredProducts.map((p) => {
               const image = getImage(p.content?.rendered);
               const cleanContent = removeImages(p.content?.rendered);
+              const plainTitle = decodeToText(p.title?.rendered);
 
               return (
                 <article key={p.id} className="pl-card">
                   <div className="pl-thumb">
-                    <img src={image} alt={p.title.rendered} />
+                    <img src={image} alt={plainTitle} />
                   </div>
 
                   <div className="pl-info">
-                    <h3
-                      className="pl-name"
-                      dangerouslySetInnerHTML={{ __html: p.title.rendered }}
-                    />
+                    <h3 className="pl-name">{plainTitle}</h3>
 
                     <div
                       className="pl-description"
