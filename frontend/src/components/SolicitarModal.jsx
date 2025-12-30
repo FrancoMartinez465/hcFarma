@@ -1,14 +1,26 @@
 import React, { useState, useMemo } from "react";
-import { branches } from "../services/products";
 import "../assets/css/solicitar.css";
-
+// Usar la imagen colocada en `public/` via ruta absoluta
 export default function SolicitarModal({ product, onClose }) {
   const [name, setName] = useState("");
   const [dni, setDni] = useState("");
   const [payment, setPayment] = useState("efectivo");
-  const [branchId, setBranchId] = useState(product?.branches?.[0] || branches?.[0]?.id || "");
   const [time, setTime] = useState("");
 
+  // Obtener nombre del producto desde WordPress
+  const productName = useMemo(() => {
+    return (
+      product?.title?.rendered?.replace(/<[^>]*>/g, "") ||
+      "Producto"
+    );
+  }, [product]);
+
+  function parseHM(hm) {
+    const [h, m] = hm.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  // Horarios fijos (Gandhi)
   const todayRanges = useMemo(() => {
     const days = [
       "Domingo",
@@ -19,17 +31,21 @@ export default function SolicitarModal({ product, onClose }) {
       "Viernes",
       "Sábado",
     ];
-    const now = new Date();
-    const today = days[now.getDay()];
-    const br = branches.find((b) => b.id === branchId) || branches[0];
-    const dayEntry = br?.schedule?.find((d) => d.day === today);
-    return dayEntry?.ranges || [];
-  }, [branchId]);
+    const today = days[new Date().getDay()];
 
-  function parseHM(hm) {
-    const [h, m] = hm.split(":").map(Number);
-    return h * 60 + m;
-  }
+    // 👉 horarios sincronizados con la sucursal Gandhi (09:00 - 21:00)
+    const schedule = {
+      Lunes: [["09:00", "21:00"]],
+      Martes: [["09:00", "21:00"]],
+      Miércoles: [["09:00", "21:00"]],
+      Jueves: [["09:00", "21:00"]],
+      Viernes: [["09:00", "21:00"]],
+      Sábado: [["09:00", "21:00"]],
+      Domingo: [["10:00", "14:00"], ["17:00", "21:00"]],
+    };
+
+    return schedule[today] || [];
+  }, []);
 
   function isTimeWithinRanges(hm, ranges) {
     if (!hm) return false;
@@ -50,25 +66,35 @@ export default function SolicitarModal({ product, onClose }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    const phone = "5493517517088"; // número de la farmacia en formato para wa.me (sin +)
-    // Normalizar inputs
-    const clean = (s = "") => String(s).replace(/\s+/g, " ").trim();
-    const nameClean = clean(name);
-    const dniClean = String(dni).replace(/\D/g, ""); // solo dígitos
-    const paymentClean = clean(payment);
-    const productLine = product.id ? `${clean(product.name)} (Código: ${product.id})` : clean(product.name);
 
-    const branchName = branches.find((b) => b.id === branchId)?.name || branchId || "Sucursal no especificada";
+    const phone = "5493517517088"; // número real de la farmacia
+    const clean = (s = "") => String(s).replace(/\s+/g, " ").trim();
+
+    const nameClean = clean(name);
+    const dniClean = String(dni).replace(/\D/g, "");
+    const paymentClean = clean(payment);
+
     let scheduleText = "Ahora";
     if (time) {
       if (!isTimeWithinRanges(time, todayRanges)) {
-        alert("La hora seleccionada no está dentro del horario de la sucursal para hoy.");
+        alert("La hora seleccionada no está dentro del horario de atención.");
         return;
       }
       scheduleText = time;
     }
 
-    const text = `Hola, quisiera solicitar:\nProducto: ${productLine}\nNombre: ${nameClean}\nDNI: ${dniClean}\nRetirar en: ${branchName}\nHorario: ${scheduleText}\nForma de pago: ${paymentClean}`;
+    const text = `
+Hola, quisiera solicitar:
+
+Producto: ${productName}
+Código interno: ${product.id}
+Nombre: ${nameClean}
+DNI: ${dniClean}
+Retiro en: Sucursal Gandhi
+Horario: ${scheduleText}
+Forma de pago: ${paymentClean}
+    `;
+
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
     onClose();
@@ -77,25 +103,25 @@ export default function SolicitarModal({ product, onClose }) {
   return (
     <div className="solicitar-overlay" role="dialog" aria-modal="true">
       <div className="solicitar-card">
-        <h3>Solicitar: {product.name}</h3>
+        <h3>Solicitar: {productName}</h3>
+
         <form onSubmit={handleSubmit} className="solicitar-form">
           <label>Nombre del cliente</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
 
           <label>DNI</label>
-          <input value={dni} onChange={(e) => setDni(e.target.value)} required />
+          <input
+            value={dni}
+            onChange={(e) => setDni(e.target.value)}
+            required
+          />
 
-          <label>Sucursal para retiro</label>
-          <select value={branchId} onChange={(e) => setBranchId(e.target.value)} required>
-            {(product?.branches || branches.map(b => b.id)).map((id) => {
-              const b = branches.find((br) => br.id === id) || { id };
-              return (
-                <option key={b.id} value={b.id}>
-                  {b.name || b.id}
-                </option>
-              );
-            })}
-          </select>
+          <label>Retiro</label>
+          <input value="Sucursal Gandhi" disabled />
 
           <label>Horario de retiro (opcional)</label>
           <input
@@ -103,27 +129,36 @@ export default function SolicitarModal({ product, onClose }) {
             value={time}
             onChange={(e) => setTime(e.target.value)}
             step="60"
-            placeholder="HH:MM"
           />
+
           <div className="hint">
             {todayRanges.length > 0 ? (
-              <small>Horarios disponibles hoy: {todayRanges.map(r => `${r[0]} - ${r[1]}`).join(", ")}</small>
+              <small>
+                Horarios hoy:{" "}
+                {todayRanges.map((r) => `${r[0]} - ${r[1]}`).join(", ")}
+              </small>
             ) : (
               <small>La sucursal está cerrada hoy.</small>
             )}
           </div>
 
           <label>Forma de pago</label>
-          <select value={payment} onChange={(e) => setPayment(e.target.value)}>
+          <select
+            value={payment}
+            onChange={(e) => setPayment(e.target.value)}
+          >
             <option value="efectivo">Efectivo</option>
             <option value="tarjeta">Tarjeta</option>
             <option value="transferencia">Transferencia</option>
           </select>
 
           <div className="solicitar-actions">
-            <button className="btn" onClick={handleCancel}>Cancelar</button>
+            <button className="btn" onClick={handleCancel}>
+              Cancelar
+            </button>
+
             <button className="btn btn-primary" type="submit">
-              <img src="/whatsapp.png" alt="WhatsApp" className="wh-icon-modal" onError={(e)=>{e.currentTarget.onerror=null; e.currentTarget.src='/image.png'}} />
+              <img src={`${import.meta.env.BASE_URL}image.png`} alt="WhatsApp" className="wh-icon-modal" />
               Solicitar
             </button>
           </div>

@@ -6,10 +6,10 @@
 .solicitar-form input, .solicitar-form select{ width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid #d1d5db }
 .solicitar-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:12px }
 .solicitar-actions .btn{ padding:8px 12px; border-radius:6px; border:1px solid rgba(0,0,0,0.06); background:#f1f5f9 }
-.solicitar-actions .btn-primary{ background:#06b6d4; color:#022; border:0 }
+.solicitar-actions .btn-primary{ background:#06b6d4; color:#fff; border:0; display:flex; align-items:center; gap:8px; padding:8px 12px }
 
-/* Icono whatsapp en modal */
-.wh-icon-modal{ width:34px; height:34px; object-fit:contain; margin-right:8px; vertical-align:middle }
+/* Icono whatsapp en modal: más visible dentro del botón */
+.wh-icon-modal{ display:block; width:28px; height:28px; object-fit:contain; margin:0; vertical-align:middle }
 
 @media (max-width:480px){
   .solicitar-card{ width: 96%; padding:14px }

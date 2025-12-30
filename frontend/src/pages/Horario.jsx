@@ -5,38 +5,22 @@ import PiePagina from "../components/PiePagina";
 
 
 const branches = [
-	{
-		id: "ghandi",
-		name: "Hc Farma Gandhi",
-		phone: "+54 9 3517 51-7088",
-		address: "Av. Mahatma Gandhi 651, X5003, Córdoba, Argentina",
-		email: "farmaciahcfarma@gmail.com",
-		schedule: [
-			{ day: "Lunes", ranges: [["09:00", "21:00"]] },
-			{ day: "Martes", ranges: [["09:00", "21:00"]] },
-			{ day: "Miércoles", ranges: [["09:00", "21:00"]] },
-			{ day: "Jueves", ranges: [["09:00", "21:00"]] },
-			{ day: "Viernes", ranges: [["09:00", "21:00"]] },
-			{ day: "Sábado", ranges: [["09:00", "21:00"]] },
-			{ day: "Domingo", ranges: [["10:00", "14:00"], ["17:00", "21:00"]] },
-		],
-	},
-	{
-		id: "centro",
-		name: "Hc Farma Centro",
-		phone: "+54 9 3517 22-0000",
-		address: "Córdoba Centro 123, Córdoba, Argentina",
-		email: "centro@hcfarma.com",
-		schedule: [
-			{ day: "Lunes", ranges: [["08:00", "20:00"]] },
-			{ day: "Martes", ranges: [["08:00", "20:00"]] },
-			{ day: "Miércoles", ranges: [["08:00", "20:00"]] },
-			{ day: "Jueves", ranges: [["08:00", "20:00"]] },
-			{ day: "Viernes", ranges: [["08:00", "20:00"]] },
-			{ day: "Sábado", ranges: [["09:00", "18:00"]] },
-			{ day: "Domingo", ranges: [] },
-		],
-	},
+  {
+    id: "ghandi",
+    name: "Hc Farma Gandhi",
+    phone: "+54 9 3517 51-7088",
+    address: "Av. Mahatma Gandhi 651, X5003, Córdoba, Argentina",
+    email: "farmaciahcfarma@gmail.com",
+    schedule: [
+      { day: "Lunes", ranges: [["09:00", "21:00"]] },
+      { day: "Martes", ranges: [["09:00", "21:00"]] },
+      { day: "Miércoles", ranges: [["09:00", "21:00"]] },
+      { day: "Jueves", ranges: [["09:00", "21:00"]] },
+      { day: "Viernes", ranges: [["09:00", "21:00"]] },
+      { day: "Sábado", ranges: [["09:00", "21:00"]] },
+      { day: "Domingo", ranges: [["10:00", "14:00"], ["17:00", "21:00"]] },
+    ],
+  },
 ];
 
 function parseHM(hm) {
