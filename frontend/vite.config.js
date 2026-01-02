@@ -1,9 +1,6 @@
-import { defineConfig } from 'vite'
-
-import react from '@vitejs/plugin-react'
-
+// /frontend/vite.config.js
 export default defineConfig({
-  base: '/hcFarma/',
+  base: '/', // Cambiado de '/hcFarma/' a '/'
   plugins: [react()],
   build: {
     outDir: '../docs',
