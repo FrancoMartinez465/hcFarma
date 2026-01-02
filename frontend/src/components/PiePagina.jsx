@@ -30,7 +30,6 @@ export default function PiePagina() {
         <div className="pie-section pie-links">
           <h4>Enlaces</h4>
           <a href={`${import.meta.env.BASE_URL}#/horario`}>Horarios</a>
-          <a href={`${import.meta.env.BASE_URL}#/resenas`}>Reseñas</a>
         </div>
       </div>
 

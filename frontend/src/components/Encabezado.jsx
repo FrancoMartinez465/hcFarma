@@ -17,7 +17,6 @@ export default function Encabezado() {
           <div className="encabezado-actions">
             <Link to="/" className="btn btn-ghost">Productos</Link>
             <Link to="/horario" className="btn btn-ghost">Ver horarios</Link>
-            <Link to="/resenas" className="btn btn-review">Dejar reseña</Link>
           </div>
         </div>
       </div>
