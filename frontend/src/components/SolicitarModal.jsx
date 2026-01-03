@@ -30,11 +30,16 @@ export default function SolicitarModal({ product, onClose }) {
     // Prioridad 3: SKU (si existe)
     if (product?.sku) return product.sku;
     
-    // Prioridad 4: Extraer del contenido HTML (buscar patrón "Código: XXX" o similar)
+    // Prioridad 4: Extraer del contenido HTML
     const content = product?.content?.rendered || "";
     if (content) {
-      const codeMatch = content.match(/c[oó]digo[:\s]+([A-Z0-9\-]+)/i);
-      if (codeMatch) return codeMatch[1];
+      // Buscar "Código: 223239" o "código: 223239" (solo números)
+      const codeMatch = content.match(/c[oó]digo(?!\s*ean)[:\s]+(\d+)/i);
+      if (codeMatch && codeMatch[1]) return codeMatch[1];
+      
+      // Buscar "Cod: 223239" o "Cod.: 223239"
+      const codMatch = content.match(/cod\.?[:\s]+(\d+)/i);
+      if (codMatch && codMatch[1]) return codMatch[1];
     }
     
     // Fallback: usar el ID de WordPress
