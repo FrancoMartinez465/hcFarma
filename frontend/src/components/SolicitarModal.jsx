@@ -21,25 +21,11 @@ export default function SolicitarModal({ product, onClose }) {
 
   // Obtener código del producto desde WordPress
   const productCode = useMemo(() => {
-    // Prioridad 1: Campo personalizado ACF
-    if (product?.acf?.codigo) return product.acf.codigo;
-    
-    // Prioridad 2: Meta campo
-    if (product?.meta?.codigo) return product.meta.codigo;
-    
-    // Prioridad 3: SKU (si existe)
-    if (product?.sku) return product.sku;
-    
-    // Prioridad 4: Extraer del contenido HTML
+    // Intentar extraer del contenido HTML
     const content = product?.content?.rendered || "";
     if (content) {
-      // Buscar "Código: 223239" o "código: 223239" (solo números)
-      const codeMatch = content.match(/c[oó]digo(?!\s*ean)[:\s]+(\d+)/i);
-      if (codeMatch && codeMatch[1]) return codeMatch[1];
-      
-      // Buscar "Cod: 223239" o "Cod.: 223239"
-      const codMatch = content.match(/cod\.?[:\s]+(\d+)/i);
-      if (codMatch && codMatch[1]) return codMatch[1];
+      const match = content.match(/c[oó]digo[:\s]+(\d+)/i);
+      if (match?.[1]) return match[1];
     }
     
     // Fallback: usar el ID de WordPress
