@@ -232,6 +232,9 @@
 .pl-actions{ 
   margin-top: 0;
   padding-top: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
 }
 
 .pl-actions .btn{ 
@@ -247,6 +250,19 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
+}
+
+.pl-actions .btn.btn-secondary{
+  background: linear-gradient(135deg, #00b4d8 0%, #0090c5 100%);
+  color: #ffffff;
+  border: 2px solid transparent;
+  box-shadow: 0 6px 16px rgba(0, 144, 197, 0.25);
+}
+
+.pl-actions .btn.btn-secondary:hover{
+  background: linear-gradient(135deg, #00a0c9 0%, #007faf 100%);
+  box-shadow: 0 10px 22px rgba(0, 127, 175, 0.3);
+  transform: translateY(-2px);
 }
 
 .pl-actions .btn.btn-primary{ 

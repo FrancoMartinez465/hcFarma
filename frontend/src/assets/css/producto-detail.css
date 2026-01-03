@@ -1,0 +1,315 @@
+.pd-wrapper {
+  max-width: 1240px;
+  margin: 32px auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.pd-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+  border-radius: 16px;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 28px;
+  padding: 24px;
+  border: 1px solid rgba(0, 144, 197, 0.18);
+  box-shadow: 0 16px 36px rgba(0, 102, 204, 0.12);
+  position: relative;
+}
+
+.pd-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(0, 102, 204, 0.24), rgba(0, 180, 216, 0.2));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+.pd-media {
+  background: #ffffff;
+  border: 1px solid rgba(0, 144, 197, 0.14);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pd-media img {
+  width: 100%;
+  max-width: 420px;
+  max-height: 420px;
+  object-fit: contain;
+}
+
+.pd-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pd-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 900;
+  color: #0f172a;
+  text-transform: uppercase;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pd-price {
+  margin: 0;
+  font-size: 36px;
+  font-weight: 900;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0066cc 0%, #00c2e6 100%);
+  padding: 16px 24px;
+  border-radius: 16px;
+  display: inline-block;
+  box-shadow: 0 10px 30px rgba(0, 102, 204, 0.3);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: -0.5px;
+}
+
+.pd-price::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.pd-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 6px 0 12px;
+}
+
+.pd-actions .btn,
+.btn-link {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pd-actions .wh-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
+
+.pd-actions .btn {
+  background: #ffffff;
+  border-color: #cde9ff;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.08);
+}
+
+.pd-actions .btn:hover {
+  background: linear-gradient(135deg, #e9f6ff 0%, #ffffff 100%);
+  box-shadow: 0 10px 18px rgba(0, 102, 204, 0.18);
+  transform: translateY(-2px);
+}
+
+.pd-actions .btn.btn-primary {
+  background: linear-gradient(135deg, #25d366 0%, #20bd5f 100%);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 10px 28px rgba(37, 211, 102, 0.35);
+  letter-spacing: 0.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  position: relative;
+  overflow: hidden;
+}
+
+.pd-actions .btn.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.4s ease;
+}
+
+.pd-actions .btn.btn-primary:hover::before {
+  left: 100%;
+}
+
+.pd-actions .btn.btn-primary:hover {
+  box-shadow: 0 14px 32px rgba(37, 211, 102, 0.45);
+  transform: translateY(-3px) scale(1.02);
+}
+
+.pd-actions .btn.btn-primary:active,
+.pd-actions .btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(0, 102, 204, 0.16);
+}
+
+/* Volver: darle un contorno más definido y estado hover con relleno suave */
+.pd-actions .btn:not(.btn-primary) {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  color: #0d47a1;
+  border: 2.5px solid #90caf9;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 6px 18px rgba(66, 165, 245, 0.25);
+}
+
+.pd-actions .btn:not(.btn-primary):hover {
+  background: linear-gradient(135deg, #bbdefb 0%, #90caf9 100%);
+  border-color: #64b5f6;
+  box-shadow: 0 12px 28px rgba(66, 165, 245, 0.35);
+  transform: translateY(-3px);
+  color: #01579b;
+}
+
+.btn-link {
+  background: transparent;
+  color: #0f172a;
+  border: none;
+  justify-content: flex-start;
+  padding: 0;
+  font-weight: 700;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.btn-link::before {
+  content: '←';
+  margin-right: 6px;
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+
+.btn-link:hover {
+  color: #1e293b;
+  transform: translateX(-4px);
+}
+
+.btn-link:hover::before {
+  transform: translateX(-3px);
+}
+
+.pd-body {
+  padding: 24px;
+  color: #1f2937;
+  line-height: 1.7;
+  font-size: 16px;
+  border: 2px solid #e6f3ff;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 102, 204, 0.06);
+  margin-top: 8px;
+}
+
+.pd-body p {
+  margin: 0 0 12px;
+}
+
+.pd-body ul,
+.pd-body ol {
+  padding-left: 20px;
+  margin: 0 0 12px;
+}
+
+.pd-body img {
+  display: none !important;
+}
+
+@media (max-width: 960px) {
+  .pd-card {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .pd-media {
+    max-height: 340px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pd-wrapper {
+    padding: 10px;
+  }
+
+  .pd-title {
+    font-size: 26px;
+    letter-spacing: -0.3px;
+  }
+
+  .pd-price {
+    font-size: 28px;
+    padding: 14px 18px;
+  }
+
+  .pd-card {
+    gap: 16px;
+    padding: 14px;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(0, 102, 204, 0.12);
+  }
+
+  .pd-card::before {
+    display: none;
+  }
+
+  .pd-media {
+    padding: 12px;
+    max-height: 280px;
+  }
+
+  .pd-media img {
+    max-width: 260px;
+    max-height: 260px;
+  }
+
+  .pd-price {
+    width: 100%;
+    text-align: left;
+  }
+
+  .pd-actions {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 8px;
+  }
+
+  .pd-actions .btn,
+  .btn-link {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "../assets/css/producto-list.css";
 import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
@@ -136,8 +137,12 @@ export default function ProductoList() {
                     <p className="pl-price">{price}</p>
 
                     <div className="pl-actions">
+                      <Link className="btn btn-secondary" to={`/producto/${p.id}`}>
+                        Detalles
+                      </Link>
                       <button
                         className="btn btn-primary"
+                        type="button"
                         onClick={() => setModalProduct(p)}
                       >
                         <img
