@@ -35,9 +35,6 @@ export default function ProductoList() {
   const getImage = (html) =>
     html?.match(/<img[^>]+src="([^">]+)"/)?.[1] || logo;
 
-  const removeImages = (html) =>
-    html?.replace(/<figure[\s\S]*?<\/figure>/gi, "");
-
   // Decodifica HTML entities y devuelve texto plano en minúsculas
   const decodeToText = (html) => {
     if (!html) return "";
@@ -48,6 +45,26 @@ export default function ProductoList() {
     } catch (e) {
       return String(html).replace(/<[^>]+>/g, "").toLowerCase();
     }
+  };
+
+  const decodeToPlainText = (html) => {
+    if (!html) return "";
+    try {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      return (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+    } catch (e) {
+      return String(html).replace(/<[^>]+>/g, "");
+    }
+  };
+
+  const getPrice = (html) => {
+    if (!html) return "Precio no disponible";
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    const text = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+    const match = text.match(/precio\s*[:\-]?\s*\$?\s*([0-9][0-9.,]+)/i);
+    return match?.[1] ? `$ ${match[1].trim()}` : "Precio no disponible";
   };
 
   const filteredProducts = products.filter((p) =>
@@ -105,8 +122,8 @@ export default function ProductoList() {
           <div className="pl-grid">
             {filteredProducts.map((p) => {
               const image = getImage(p.content?.rendered);
-              const cleanContent = removeImages(p.content?.rendered);
-              const plainTitle = decodeToText(p.title?.rendered);
+              const plainTitle = decodeToPlainText(p.title?.rendered);
+              const price = getPrice(p.content?.rendered);
 
               return (
                 <article key={p.id} className="pl-card">
@@ -116,18 +133,18 @@ export default function ProductoList() {
 
                   <div className="pl-info">
                     <h3 className="pl-name">{plainTitle}</h3>
-
-                    <div
-                      className="pl-description"
-                      dangerouslySetInnerHTML={{ __html: cleanContent }}
-                    />
+                    <p className="pl-price">{price}</p>
 
                     <div className="pl-actions">
                       <button
                         className="btn btn-primary"
                         onClick={() => setModalProduct(p)}
                       >
-                        <img src={`${import.meta.env.BASE_URL}image.png`} alt="WhatsApp" className="wh-icon" />
+                        <img
+                          src={`${import.meta.env.BASE_URL}image.png`}
+                          alt="WhatsApp"
+                          className="wh-icon"
+                        />
                         Solicitar
                       </button>
                     </div>

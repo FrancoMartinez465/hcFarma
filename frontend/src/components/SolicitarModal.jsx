@@ -96,8 +96,7 @@ Nombre: ${nameClean}
 DNI: ${dniClean}
 Retiro en: Sucursal Gandhi
 Horario: ${scheduleText}
-Forma de pago: ${paymentClean}
-    `;
+Forma de pago: ${paymentClean}Gracias.`;
 
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
