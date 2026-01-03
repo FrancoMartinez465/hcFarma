@@ -19,13 +19,7 @@ export default function SolicitarModal({ product, onClose }) {
     return decoded || "Producto";
   }, [product]);
 
-  // Obtener código del producto desde WordPress
-  const productCode = useMemo(() => {
-    if (!product?.id) return "SIN-CODIGO";
-    return `POST-${product.id}`;
-    }, [product]);
 
-    
   function parseHM(hm) {
     const [h, m] = hm.split(":").map(Number);
     return h * 60 + m;
@@ -98,7 +92,6 @@ export default function SolicitarModal({ product, onClose }) {
 Hola, quisiera solicitar:
 
 Producto: ${productName}
-Código interno: ${productCode}
 Nombre: ${nameClean}
 DNI: ${dniClean}
 Retiro en: Sucursal Gandhi
