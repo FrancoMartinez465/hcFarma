@@ -21,17 +21,11 @@ export default function SolicitarModal({ product, onClose }) {
 
   // Obtener código del producto desde WordPress
   const productCode = useMemo(() => {
-    // Intentar extraer del contenido HTML
-    const content = product?.content?.rendered || "";
-    if (content) {
-      const match = content.match(/c[oó]digo[:\s]+(\d+)/i);
-      if (match?.[1]) return match[1];
-    }
-    
-    // Fallback: usar el ID de WordPress
-    return product?.id || "N/A";
-  }, [product]);
+    if (!product?.id) return "SIN-CODIGO";
+    return `POST-${product.id}`;
+    }, [product]);
 
+    
   function parseHM(hm) {
     const [h, m] = hm.split(":").map(Number);
     return h * 60 + m;
