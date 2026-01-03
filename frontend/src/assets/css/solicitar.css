@@ -1,19 +1,284 @@
+/* Animaciones */
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* Estilos para modal de solicitud */
-.solicitar-overlay{ position:fixed; inset:0; background:rgba(2,6,23,0.6); display:flex; align-items:center; justify-content:center; z-index:20000 }
-.solicitar-card{ background:#fff; padding:18px; border-radius:8px; width:420px; max-width:92%; box-shadow:0 8px 30px rgba(2,6,23,0.3) }
-.solicitar-card h3{ margin:0 0 10px 0 }
-.solicitar-form label{ display:block; margin-top:8px; font-size:13px }
-.solicitar-form input, .solicitar-form select{ width:100%; padding:10px; margin-top:6px; border-radius:6px; border:1px solid #d1d5db }
-.solicitar-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:12px }
-.solicitar-actions .btn{ padding:8px 12px; border-radius:6px; border:1px solid rgba(0,0,0,0.06); background:#f1f5f9 }
-.solicitar-actions .btn-primary{ background:#06b6d4; color:#fff; border:0; display:flex; align-items:center; gap:8px; padding:8px 12px }
+.solicitar-overlay { 
+  position: fixed; 
+  inset: 0; 
+  background: rgba(2, 6, 23, 0.7); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  z-index: 20000;
+  backdrop-filter: blur(2px);
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+.solicitar-card { 
+  background: #fff; 
+  border-radius: 12px; 
+  width: 420px; 
+  max-width: 92%; 
+  box-shadow: 0 25px 60px rgba(0, 102, 204, 0.3);
+  overflow: hidden;
+  border: 2px solid #333333;
+  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.solicitar-card h3 { 
+  margin: 0;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.solicitar-form {
+  padding: 18px;
+}
+
+.solicitar-form label { 
+  display: block; 
+  margin-top: 12px; 
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.solicitar-form input, 
+.solicitar-form select { 
+  width: 100%; 
+  padding: 10px 12px; 
+  margin-top: 0;
+  border-radius: 8px; 
+  border: 1.5px solid #333333;
+  background: #ffffff;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  color: #1a1a1a;
+}
+
+.solicitar-form input:hover,
+.solicitar-form select:hover {
+  border-color: #0066cc;
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+}
+
+.solicitar-form input:focus,
+.solicitar-form select:focus {
+  outline: none;
+  border-color: #0066cc;
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  background: #f8faff;
+  transform: translateY(-1px);
+}
+
+.solicitar-form input:disabled {
+  background: #f8faff;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.hint {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 180, 216, 0.05);
+  border-radius: 6px;
+  border-left: 3px solid #00b4d8;
+  animation: fadeInUp 0.4s ease-out 0.1s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hint small {
+  color: #0066cc;
+  font-size: 12px;
+  font-weight: 500;
+  display: block;
+}
+
+.solicitar-actions { 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 10px; 
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.solicitar-actions .btn { 
+  padding: 10px 16px; 
+  border-radius: 8px; 
+  border: 1.5px solid #333333;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.solicitar-actions .btn:hover {
+  border-color: #ff4757;
+  background: #ffe6e9;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.2);
+  color: #ff4757;
+}
+
+.solicitar-actions .btn:active {
+  transform: translateY(0);
+}
+
+.solicitar-actions .btn-primary { 
+  background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%);
+  color: #fff;
+  border: 0;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+  position: relative;
+  overflow: hidden;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.solicitar-actions .btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(37, 211, 102, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.solicitar-actions .btn-primary:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.solicitar-actions .btn-primary:hover {
+  background: linear-gradient(135deg, #25D366 0%, #20c55d 100%);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+  transform: translateY(-3px);
+  font-weight: 800;
+  color: #000000;
+}
+
+.solicitar-actions .btn-primary:active {
+  transform: translateY(0);
+}
 
 /* Icono whatsapp en modal: más visible dentro del botón */
-.wh-icon-modal{ display:block; width:28px; height:28px; object-fit:contain; margin:0; vertical-align:middle }
+.wh-icon-modal { 
+  display: block; 
+  width: 28px; 
+  height: 28px; 
+  object-fit: contain; 
+  margin: 0; 
+  vertical-align: middle;
+  position: relative;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
 
-@media (max-width:480px){
-  .solicitar-card{ width: 96%; padding:14px }
-  .solicitar-actions{ flex-direction:column-reverse; }
-  .solicitar-actions .btn{ width:100% }
-  .wh-icon-modal{ width:24px; height:24px }
+.solicitar-actions .btn-primary:hover .wh-icon-modal {
+  transform: scale(1.15) rotate(10deg);
+}
+
+@media (max-width: 480px) {
+  .solicitar-card { 
+    width: 96%; 
+    padding: 0;
+    animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  .solicitar-card h3 {
+    padding: 14px 16px;
+    font-size: 15px;
+  }
+
+  .solicitar-form {
+    padding: 16px;
+  }
+
+  .solicitar-form label {
+    margin-top: 10px;
+    font-size: 12px;
+  }
+
+  .solicitar-form input,
+  .solicitar-form select {
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+  
+  .solicitar-actions { 
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  
+  .solicitar-actions .btn,
+  .solicitar-actions .btn-primary { 
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 12px;
+  }
+
+  .solicitar-actions .btn-primary {
+    padding: 12px 14px;
+  }
+  
+  .wh-icon-modal { 
+    width: 20px; 
+    height: 20px; 
+  }
+
+  .hint {
+    margin-top: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
 }

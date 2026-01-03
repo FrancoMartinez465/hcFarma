@@ -10,6 +10,7 @@ const branches = [
     name: "Hc Farma Gandhi",
     phone: "+54 9 3517 51-7088",
     address: "Av. Mahatma Gandhi 651, X5003, Córdoba, Argentina",
+    mapsLink: "https://maps.app.goo.gl/5ZJ3DuU5ZuQh6aSL9",
     email: "farmaciahcfarma@gmail.com",
     schedule: [
       { day: "Lunes", ranges: [["09:00", "21:00"]] },
@@ -26,6 +27,7 @@ const branches = [
     name: "Hc Farma Ruta 20",
     phone: "+54 9 351 466-6909",
     address: "Av. Fuerza Aérea Argentina 2475, X5010 Córdoba, Argentina",
+    mapsLink: "https://maps.app.goo.gl/kLoK7gTM9G3vedD76",
     email: "farmaciahcfarma@gmail.com",
     schedule: [
       { day: "Lunes", ranges: [["09:00", "14:00"], ["16:00", "21:30"]] },
@@ -41,7 +43,8 @@ const branches = [
     id: "sanmartin",
     name: "Hc Farma San Martin",
     phone: "+54 9 351 878-2427",
-    address: "Federico Brandsen 140, X5000GMD Córdoba, Argentina",
+    address: "Federico Brandsen 141, X5000GMD Córdoba, Argentina",
+    mapsLink: "https://maps.app.goo.gl/K5mqC4HrumTXMwFdA",
     email: "farmaciahcfarma@gmail.com",
     schedule: [
       { day: "Lunes", ranges: [["09:00", "14:00"], ["16:00", "21:30"]] },
@@ -263,7 +266,7 @@ export default function Horario() {
 						<iframe
 							title={`Mapa ${selectedBranch.name}`}
 							className="map-embed"
-							src={`https://www.google.com/maps?q=${encodeURIComponent(selectedBranch.address)}&output=embed`}
+							src={`https://www.google.com/maps?q=${encodeURIComponent(selectedBranch.address)}&output=embed&z=18`}
 							loading="lazy"
 						/>
 					</div>
@@ -275,4 +278,3 @@ export default function Horario() {
 		</div>
 	);
 }
-
