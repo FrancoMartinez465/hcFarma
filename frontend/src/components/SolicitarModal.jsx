@@ -19,6 +19,28 @@ export default function SolicitarModal({ product, onClose }) {
     return decoded || "Producto";
   }, [product]);
 
+  // Obtener código del producto desde WordPress
+  const productCode = useMemo(() => {
+    // Prioridad 1: Campo personalizado ACF
+    if (product?.acf?.codigo) return product.acf.codigo;
+    
+    // Prioridad 2: Meta campo
+    if (product?.meta?.codigo) return product.meta.codigo;
+    
+    // Prioridad 3: SKU (si existe)
+    if (product?.sku) return product.sku;
+    
+    // Prioridad 4: Extraer del contenido HTML (buscar patrón "Código: XXX" o similar)
+    const content = product?.content?.rendered || "";
+    if (content) {
+      const codeMatch = content.match(/c[oó]digo[:\s]+([A-Z0-9\-]+)/i);
+      if (codeMatch) return codeMatch[1];
+    }
+    
+    // Fallback: usar el ID de WordPress
+    return product?.id || "N/A";
+  }, [product]);
+
   function parseHM(hm) {
     const [h, m] = hm.split(":").map(Number);
     return h * 60 + m;
@@ -91,7 +113,7 @@ export default function SolicitarModal({ product, onClose }) {
 Hola, quisiera solicitar:
 
 Producto: ${productName}
-Código interno: ${product.id}
+Código interno: ${productCode}
 Nombre: ${nameClean}
 DNI: ${dniClean}
 Retiro en: Sucursal Gandhi

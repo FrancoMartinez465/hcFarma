@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React from "react";
 import "../assets/css/horario.css";
 import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
@@ -52,12 +52,7 @@ function isOpenNow(schedule) {
 }
 
 export default function Horario() {
-	const [selected, setSelected] = useState(branches[0].id);
-
-	const branch = useMemo(
-		() => branches.find((b) => b.id === selected) || branches[0],
-		[selected]
-	);
+	const branch = branches[0]; // Solo sucursal Gandhi
 
 	const abierto = isOpenNow(branch.schedule);
 
@@ -66,17 +61,6 @@ export default function Horario() {
 			<Encabezado />
 			<main className="horario-container">
 				<h2 className="horario-title">Sucursales y horarios</h2>
-
-				<div className="select-branch">
-					<label htmlFor="branch-select">Seleccionar sucursal:</label>
-					<select id="branch-select" value={selected} onChange={(e) => setSelected(e.target.value)}>
-						{branches.map((b) => (
-							<option key={b.id} value={b.id}>
-								{b.name}
-							</option>
-						))}
-					</select>
-				</div>
 
 				<div className="horario-card" role="region" aria-label={`Horarios ${branch.name}`}>
 					<div className="branch-header">
