@@ -25,7 +25,7 @@ export default function PiePagina() {
             <div className="pie-line">🗺️ <a href="https://www.google.com/maps?q=Federico+Brandsen+140,+X5000GMD+Córdoba" target="_blank" rel="noreferrer">Federico Brandsen 140, X5000GMD Córdoba</a></div>
           </div>
           
-          <div className="pie-line pie-email" style={{marginTop: "15px"}}>✉️ <a href="mailto:farmaciahcfarma@gmail.com">farmaciahcfarma@gmail.com</a></div>
+          <div className="pie-line pie-email" style={{marginTop: "8px"}}>✉️ <a href="mailto:farmaciahcfarma@gmail.com">farmaciahcfarma@gmail.com</a></div>
         </div>
 
         <div className="pie-section pie-hours">
@@ -51,7 +51,7 @@ export default function PiePagina() {
             <a className="social" href="https://www.instagram.com/hcfarma/" target="_blank" rel="noreferrer">Instagram</a>
           </div>
           
-          <h4 style={{marginTop: "30px"}}>🔗 Enlaces</h4>
+          <h4 style={{marginTop: "16px"}}>🔗 Enlaces</h4>
           <div className="pie-links-section">
             <a href={`${import.meta.env.BASE_URL}#/horario`}>Ver horarios completos</a>
             <a href={`${import.meta.env.BASE_URL}#/medicamentos`}>Productos</a>

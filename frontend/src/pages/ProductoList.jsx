@@ -16,7 +16,7 @@ export default function ProductoList() {
 
   useEffect(() => {
     fetch(
-      "https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts?per_page=100"
+      "https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts?per_page=50"
     )
       .then((res) => {
         if (!res.ok) throw new Error("Error al cargar productos");
@@ -113,7 +113,23 @@ export default function ProductoList() {
             </div>
           </div>
 
-          {loading && <p>Cargando productos...</p>}
+          {loading && (
+            <>
+              <p>Cargando productos...</p>
+              <div className="pl-grid">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="pl-card pl-skeleton">
+                    <div className="pl-thumb skeleton-img"></div>
+                    <div className="pl-info">
+                      <div className="skeleton-title"></div>
+                      <div className="skeleton-price"></div>
+                      <div className="skeleton-buttons"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
           {error && <p>Error: {error}</p>}
 
           {!loading && filteredProducts.length === 0 && (
@@ -129,7 +145,12 @@ export default function ProductoList() {
               return (
                 <article key={p.id} className="pl-card">
                   <div className="pl-thumb">
-                    <img src={image} alt={plainTitle} />
+                    <img 
+                      src={image} 
+                      alt={plainTitle}
+                      loading="lazy"
+                      decoding="async"
+                    />
                   </div>
 
                   <div className="pl-info">

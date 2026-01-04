@@ -41,6 +41,7 @@ export default function ProductoDetalle() {
   useEffect(() => {
     setLoading(true);
     setError(null);
+    window.scrollTo(0, 0);
     fetch(`${API_URL}/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("No pudimos cargar el producto");
@@ -76,13 +77,29 @@ export default function ProductoDetalle() {
 
       <main className="hc-main">
         <section className="pd-wrapper">
-          {loading && <p>Cargando producto...</p>}
-          {error && <p>Error: {error}</p>}
+          {loading && (
+            <article className="pd-card pd-skeleton">
+              <div className="pd-media skeleton-img-detail"></div>
+              <div className="pd-content">
+                <div className="skeleton-back"></div>
+                <div className="skeleton-title-detail"></div>
+                <div className="skeleton-price-detail"></div>
+                <div className="skeleton-buttons-detail"></div>
+                <div className="skeleton-body-detail"></div>
+              </div>
+            </article>
+          )}
+          {!loading && error && <p>Error: {error}</p>}
 
           {!loading && !error && product && (
             <article className="pd-card">
               <div className="pd-media">
-                <img src={image} alt={title} />
+                <img 
+                  src={image} 
+                  alt={title}
+                  loading="eager"
+                  decoding="async"
+                />
               </div>
 
               <div className="pd-content">
