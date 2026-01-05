@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import "../assets/css/solicitar.css";
-// Usar la imagen colocada en `public/` via ruta absoluta
+const whatsappIcon = `${import.meta.env.BASE_URL}image.png`;
 export default function SolicitarModal({ product, onClose }) {
   const [name, setName] = useState("");
   const [dni, setDni] = useState("");
@@ -245,7 +245,7 @@ Muchísimas gracias`;
             </button>
 
             <button className="btn btn-primary" type="submit">
-              <img src={`${import.meta.env.BASE_URL}image.png`} alt="WhatsApp" className="wh-icon-modal" />
+              <img src={whatsappIcon} alt="WhatsApp" className="wh-icon-modal" />
               Confirmar Pedido
             </button>
           </div>

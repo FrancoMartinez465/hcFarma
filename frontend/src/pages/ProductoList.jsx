@@ -14,6 +14,7 @@ export default function ProductoList() {
   const [query, setQuery] = useState("");
   const [activeQuery, setActiveQuery] = useState("");
   const [notifications, setNotifications] = useState([]);
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
   useEffect(() => {
     fetch(
@@ -80,19 +81,23 @@ export default function ProductoList() {
   };
 
   const handleAddToCart = (product) => {
-    addToCart(product);
+    const wasAdded = addToCart(product);
     
-    const id = Date.now();
-    const newNotification = {
-      id,
-      message: "✓ Producto añadido al carrito"
-    };
-    
-    setNotifications(prev => [...prev, newNotification]);
-    
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(n => n.id !== id));
-    }, 3000);
+    if (wasAdded) {
+      const id = Date.now();
+      const newNotification = {
+        id,
+        message: "✓ Producto añadido al carrito"
+      };
+      
+      setNotifications([newNotification]);
+      
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+      }, 2500);
+    } else {
+      setShowLimitModal(true);
+    }
   };
 
   return (
@@ -106,6 +111,22 @@ export default function ProductoList() {
           </div>
         ))}
       </div>
+
+      {showLimitModal && (
+        <div className="limit-modal-overlay">
+          <div className="limit-modal">
+            <div className="limit-modal-icon">⚠️</div>
+            <h3>Cantidad máxima alcanzada</h3>
+            <p>No puedes agregar más de 2 unidades por producto</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowLimitModal(false)}
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
 
       <main className="hc-main">
         <section className="producto-list">

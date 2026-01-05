@@ -263,6 +263,13 @@
   transition: all 0.3s ease;
 }
 
+.wh-icon-modal {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
 .solicitar-actions .btn-primary:hover {
   background: #059669;
   box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);

@@ -5,12 +5,15 @@ import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
 import SolicitarModal from "../components/SolicitarModal";
 import logo from "../assets/images/image.png";
+// Icono desde public para mayor nitidez
+const whatsappIcon = `${import.meta.env.BASE_URL}image.png`;
 import "../assets/css/carrito.css";
 
 export default function Carrito() {
   const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart();
   const [showModal, setShowModal] = useState(false);
   const [showConfirmClear, setShowConfirmClear] = useState(false);
+  const [showLimitModal, setShowLimitModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -52,6 +55,13 @@ export default function Carrito() {
     setShowConfirmClear(false);
   };
 
+  const handleUpdateQuantity = (productId, newQuantity) => {
+    const success = updateQuantity(productId, newQuantity);
+    if (!success && newQuantity > 2) {
+      setShowLimitModal(true);
+    }
+  };
+
   // Calcular precio total del carrito
   const getTotalPrice = () => {
     let total = 0;
@@ -79,6 +89,22 @@ export default function Carrito() {
   return (
     <div className="hc-container">
       <Encabezado />
+
+      {showLimitModal && (
+        <div className="limit-modal-overlay">
+          <div className="limit-modal">
+            <div className="limit-modal-icon">⚠️</div>
+            <h3>Cantidad máxima alcanzada</h3>
+            <p>No puedes agregar más de 2 unidades por producto</p>
+            <button
+              className="btn btn-primary"
+              onClick={() => setShowLimitModal(false)}
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
+      )}
 
       {showModal && (
         <SolicitarModal
@@ -151,7 +177,7 @@ export default function Carrito() {
                       <div className="item-quantity">
                         <button
                           className="qty-btn"
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
                           aria-label="Disminuir cantidad"
                         >
                           −
@@ -159,7 +185,7 @@ export default function Carrito() {
                         <span className="qty-value">{item.quantity}</span>
                         <button
                           className="qty-btn"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
                           aria-label="Aumentar cantidad"
                         >
                           +
@@ -192,7 +218,7 @@ export default function Carrito() {
                   onClick={handleSolicitar}
                 >
                   <img
-                    src={`${import.meta.env.BASE_URL}image.png`}
+                    src={whatsappIcon}
                     alt="WhatsApp"
                     className="wh-icon-cart"
                   />
