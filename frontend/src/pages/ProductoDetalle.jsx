@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
-import SolicitarModal from "../components/SolicitarModal";
+import { useCart } from "../context/CartContext";
 import logo from "../assets/images/image.png";
 import "../assets/css/producto-detail.css";
 
@@ -33,10 +33,11 @@ const getPrice = (html) => {
 export default function ProductoDetalle() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -67,13 +68,35 @@ export default function ProductoDetalle() {
     else navigate("/");
   };
 
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
+      
+      const id = Date.now();
+      const newNotification = {
+        id,
+        message: "✓ Producto añadido al carrito"
+      };
+      
+      setNotifications(prev => [...prev, newNotification]);
+      
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== id));
+      }, 3000);
+    }
+  };
+
   return (
     <div className="hc-container">
       <Encabezado />
 
-      {showModal && (
-        <SolicitarModal product={product} onClose={() => setShowModal(false)} />
-      )}
+      <div className="cart-notifications-container">
+        {notifications.map((notif) => (
+          <div key={notif.id} className="cart-notification">
+            {notif.message}
+          </div>
+        ))}
+      </div>
 
       <main className="hc-main">
         <section className="pd-wrapper">
@@ -112,13 +135,8 @@ export default function ProductoDetalle() {
 
                 <div className="pd-actions">
                   <button className="btn" onClick={handleBack}>Volver</button>
-                  <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-                    <img
-                      src={`${import.meta.env.BASE_URL}image.png`}
-                      alt="WhatsApp"
-                      className="wh-icon"
-                    />
-                    Solicitar
+                  <button className="btn btn-primary" onClick={handleAddToCart}>
+                    🛒 Añadir al carrito
                   </button>
                 </div>
 
