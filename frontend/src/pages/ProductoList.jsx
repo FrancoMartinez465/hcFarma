@@ -3,16 +3,17 @@ import { Link } from "react-router-dom";
 import "../assets/css/producto-list.css";
 import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
-import SolicitarModal from "../components/SolicitarModal";
+import { useCart } from "../context/CartContext";
 import logo from "../assets/images/image.png";
 
 export default function ProductoList() {
+  const { addToCart } = useCart();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [modalProduct, setModalProduct] = useState(null);
   const [query, setQuery] = useState("");
   const [activeQuery, setActiveQuery] = useState("");
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
     fetch(
@@ -78,16 +79,33 @@ export default function ProductoList() {
     setActiveQuery("");
   };
 
+  const handleAddToCart = (product) => {
+    addToCart(product);
+    
+    const id = Date.now();
+    const newNotification = {
+      id,
+      message: "✓ Producto añadido al carrito"
+    };
+    
+    setNotifications(prev => [...prev, newNotification]);
+    
+    setTimeout(() => {
+      setNotifications(prev => prev.filter(n => n.id !== id));
+    }, 3000);
+  };
+
   return (
     <div className="hc-container">
       <Encabezado />
 
-      {modalProduct && (
-        <SolicitarModal
-          product={modalProduct}
-          onClose={() => setModalProduct(null)}
-        />
-      )}
+      <div className="cart-notifications-container">
+        {notifications.map((notif) => (
+          <div key={notif.id} className="cart-notification">
+            {notif.message}
+          </div>
+        ))}
+      </div>
 
       <main className="hc-main">
         <section className="producto-list">
@@ -164,14 +182,9 @@ export default function ProductoList() {
                       <button
                         className="btn btn-primary"
                         type="button"
-                        onClick={() => setModalProduct(p)}
+                        onClick={() => handleAddToCart(p)}
                       >
-                        <img
-                          src={`${import.meta.env.BASE_URL}image.png`}
-                          alt="WhatsApp"
-                          className="wh-icon"
-                        />
-                        Solicitar
+                        🛒 Añadir al carrito
                       </button>
                     </div>
                   </div>

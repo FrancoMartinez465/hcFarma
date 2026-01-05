@@ -19,6 +19,68 @@
   }
 }
 
+/* Caja de resumen de productos */
+.solicitar-summary {
+  background: #f8fafc;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.summary-heading {
+  margin: 0 0 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.summary-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  font-size: 13px;
+  color: #1a1a1a;
+}
+
+.summary-item::before {
+  content: none;
+}
+
+.summary-item-name {
+  font-weight: 500;
+  color: #334155;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  margin-top: 12px;
+}
+
+.summary-total-label {
+  font-weight: 600;
+  color: #475569;
+  font-size: 14px;
+}
+
+.summary-total-price {
+  font-weight: 700;
+  color: #10b981;
+  font-size: 16px;
+}
+
 /* Estilos para modal de solicitud */
 .solicitar-overlay { 
   position: fixed; 
@@ -37,70 +99,87 @@
   border-radius: 12px; 
   width: 420px; 
   max-width: 92%; 
-  box-shadow: 0 25px 60px rgba(0, 102, 204, 0.3);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
   overflow: hidden;
-  border: 2px solid #333333;
+  border: none;
   animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.solicitar-card h3 { 
+.solicitar-title { 
   margin: 0;
-  padding: 16px 18px;
-  background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%);
-  color: #fff;
-  font-size: 16px;
+  padding: 20px 24px;
+  background: #ffffff;
+  color: #0c4a6e;
+  font-size: 22px;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: -0.3px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .solicitar-form {
-  padding: 18px;
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .solicitar-form label { 
   display: block; 
-  margin-top: 12px; 
-  font-size: 13px;
+  margin-top: 16px;
+  margin-bottom: 6px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1a1a1a;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  color: #475569;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.solicitar-form label .optional {
+  font-weight: 400;
+  color: #94a3b8;
+  font-size: 13px;
 }
 
 .solicitar-form input, 
 .solicitar-form select { 
   width: 100%; 
-  padding: 10px 12px; 
+  padding: 12px 14px; 
   margin-top: 0;
   border-radius: 8px; 
-  border: 1.5px solid #333333;
+  border: 1.5px solid #e2e8f0;
   background: #ffffff;
   font-size: 14px;
   transition: all 0.3s ease;
   box-sizing: border-box;
   color: #1a1a1a;
+  font-family: inherit;
+}
+
+.solicitar-form input::placeholder {
+  color: #cbd5e1;
 }
 
 .solicitar-form input:hover,
 .solicitar-form select:hover {
-  border-color: #0066cc;
-  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.08);
+  border-color: #bae6fd;
+  box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08);
 }
 
 .solicitar-form input:focus,
 .solicitar-form select:focus {
   outline: none;
-  border-color: #0066cc;
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  border-color: #0369a1;
+  box-shadow: 0 0 0 3px rgba(3, 105, 161, 0.1);
   background: #f8faff;
-  transform: translateY(-1px);
 }
 
 .solicitar-form input:disabled {
-  background: #f8faff;
+  background: #f1f5f9;
   color: #94a3b8;
   cursor: not-allowed;
+  border-color: #e2e8f0;
 }
 
 .hint {
@@ -133,89 +212,169 @@
 .solicitar-actions { 
   display: flex; 
   justify-content: flex-end; 
-  gap: 10px; 
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #f1f5f9;
+  gap: 12px; 
+  margin-top: 0;
+  padding: 20px 24px;
+  border-top: 1px solid #e2e8f0;
+  flex-shrink: 0;
 }
 
 .solicitar-actions .btn { 
-  padding: 10px 16px; 
+  padding: 12px 20px; 
   border-radius: 8px; 
-  border: 1.5px solid #333333;
-  background: #ffffff;
-  color: #1a1a1a;
+  border: none;
+  background: transparent;
+  color: #64748b;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
-.solicitar-actions .btn:hover {
-  border-color: #ff4757;
-  background: #ffe6e9;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 71, 87, 0.2);
-  color: #ff4757;
+.solicitar-actions .btn-ghost {
+  border: 1.5px solid #e2e8f0;
 }
 
-.solicitar-actions .btn:active {
-  transform: translateY(0);
+.solicitar-actions .btn-ghost:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #475569;
+  transform: none;
+  box-shadow: none;
+}
+
+.solicitar-actions .btn-ghost:active {
+  transform: scale(0.98);
 }
 
 .solicitar-actions .btn-primary { 
-  background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%);
+  background: #10b981;
   color: #fff;
-  border: 0;
+  border: none;
   display: flex; 
   align-items: center; 
   justify-content: center;
   gap: 8px;
-  padding: 10px 16px;
-  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
-  position: relative;
-  overflow: hidden;
+  padding: 12px 24px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
   font-weight: 600;
   transition: all 0.3s ease;
 }
 
-.solicitar-actions .btn-primary::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  background: rgba(37, 211, 102, 0.4);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-.solicitar-actions .btn-primary:hover::before {
-  width: 300px;
-  height: 300px;
-}
-
 .solicitar-actions .btn-primary:hover {
-  background: linear-gradient(135deg, #25D366 0%, #20c55d 100%);
-  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
-  transform: translateY(-3px);
-  font-weight: 800;
-  color: #000000;
+  background: #059669;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
 }
 
 .solicitar-actions .btn-primary:active {
-  transform: translateY(0);
+  transform: translateY(0) scale(0.98);
 }
 
-/* Icono whatsapp en modal: más visible dentro del botón */
+/* Modal de error */
+.error-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20001;
+  backdrop-filter: blur(2px);
+  animation: overlayFadeIn 0.3s ease-out;
+}
+
+.error-modal {
+  background: #fff;
+  border-radius: 12px;
+  width: 360px;
+  max-width: 92%;
+  padding: 32px 24px;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.12);
+  text-align: center;
+  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-modal h3 {
+  margin: 0 0 12px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #dc2626;
+}
+
+.error-modal p {
+  margin: 0 0 24px 0;
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.error-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.error-actions .btn {
+  padding: 12px 28px;
+  border-radius: 8px;
+  border: none;
+  background: #10b981;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.error-actions .btn:hover {
+  background: #059669;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+  transform: translateY(-2px);
+}
+
+.error-actions .btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+@media (max-width: 480px) {
+  .error-modal {
+    width: 90%;
+    padding: 24px 16px;
+  }
+
+  .error-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+
+  .error-modal h3 {
+    font-size: 18px;
+  }
+
+  .error-modal p {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .error-actions .btn {
+    padding: 11px 20px;
+    font-size: 13px;
+  }
+}
+
+
 .wh-icon-modal { 
   display: block; 
-  width: 28px; 
-  height: 28px; 
+  width: 35px; 
+  height: 35px; 
   object-fit: contain; 
   margin: 0; 
   vertical-align: middle;
@@ -225,7 +384,7 @@
 }
 
 .solicitar-actions .btn-primary:hover .wh-icon-modal {
-  transform: scale(1.15) rotate(10deg);
+  transform: scale(1.12) rotate(8deg);
 }
 
 @media (max-width: 480px) {
@@ -235,9 +394,13 @@
     animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   
-  .solicitar-card h3 {
-    padding: 14px 16px;
-    font-size: 15px;
+  .solicitar-title {
+    padding: 18px 16px;
+    font-size: 20px;
+  }
+
+  .solicitar-summary {
+    padding: 16px;
   }
 
   .solicitar-form {
@@ -245,40 +408,41 @@
   }
 
   .solicitar-form label {
-    margin-top: 10px;
-    font-size: 12px;
+    margin-top: 14px;
+    font-size: 13px;
   }
 
   .solicitar-form input,
   .solicitar-form select {
-    padding: 9px 12px;
+    padding: 11px 12px;
     font-size: 14px;
   }
   
   .solicitar-actions { 
     flex-direction: column-reverse;
-    gap: 8px;
+    gap: 10px;
+    margin-top: 24px;
   }
   
   .solicitar-actions .btn,
   .solicitar-actions .btn-primary { 
     width: 100%;
-    padding: 11px 14px;
-    font-size: 12px;
+    padding: 13px 14px;
+    font-size: 13px;
   }
 
   .solicitar-actions .btn-primary {
-    padding: 12px 14px;
+    padding: 14px;
   }
   
   .wh-icon-modal { 
-    width: 20px; 
-    height: 20px; 
+    width: 22px; 
+    height: 22px; 
   }
 
   .hint {
-    margin-top: 6px;
-    padding: 8px 10px;
+    margin-top: 8px;
+    padding: 10px 12px;
     font-size: 12px;
   }
 }
