@@ -90,10 +90,10 @@
   width: 200%;
   height: 200%;
   background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-  animation: shimmer 3s infinite;
+  animation: shimmer-price 3s infinite;
 }
 
-@keyframes shimmer {
+@keyframes shimmer-price {
   0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
   100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
 }
@@ -330,10 +330,11 @@
   }
 }
 
+
 .skeleton-img-detail {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer-skeleton 1.5s infinite;
   height: 420px;
   border-radius: 12px;
 }
@@ -341,7 +342,7 @@
 .skeleton-back {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer-skeleton 1.5s infinite;
   height: 16px;
   width: 140px;
   border-radius: 4px;
@@ -351,7 +352,7 @@
 .skeleton-title-detail {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer-skeleton 1.5s infinite;
   height: 32px;
   width: 70%;
   border-radius: 6px;
@@ -361,7 +362,7 @@
 .skeleton-price-detail {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer-skeleton 1.5s infinite;
   height: 36px;
   width: 150px;
   border-radius: 8px;
@@ -371,21 +372,22 @@
 .skeleton-buttons-detail {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer-skeleton 1.5s infinite;
   height: 48px;
   border-radius: 8px;
   margin-bottom: 20px;
 }
 
+
 .skeleton-body-detail {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  animation: shimmer-skeleton 1.5s infinite;
   height: 200px;
   border-radius: 8px;
 }
 
-@keyframes shimmer {
+@keyframes shimmer-skeleton {
   0% {
     background-position: -200% 0;
   }

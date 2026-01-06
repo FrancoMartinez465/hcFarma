@@ -54,7 +54,7 @@ export default function PiePagina() {
           <h4 style={{marginTop: "16px"}}>🔗 Enlaces</h4>
           <div className="pie-links-section">
             <a href={`${import.meta.env.BASE_URL}#/horario`}>Ver horarios completos</a>
-            <a href={`${import.meta.env.BASE_URL}#/medicamentos`}>Productos</a>
+            <a href={`${import.meta.env.BASE_URL}#/productos`}>Productos</a>
           </div>
         </div>
       </div>

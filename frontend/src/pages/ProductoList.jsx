@@ -6,218 +6,319 @@ import PiePagina from "../components/PiePagina";
 import { useCart } from "../context/CartContext";
 import logo from "../assets/images/image.png";
 
+const SECTION_OPTIONS = [
+	{ value: "todas", label: "Todas las secciones" },
+	{ value: "dermocosmetica", label: "Dermocosmetica" },
+	{ value: "bijouterie", label: "Bijouterie" },
+	{ value: "perfumeria", label: "Perfumeria" }
+];
+
+const BRANCH_OPTIONS = [
+	{ value: "todas", label: "Todas las sucursales" },
+	{ value: "hc farma ghandi", label: "HC Farma Ghandi" },
+	{ value: "hc farma ruta 20", label: "HC Farma Ruta 20" },
+	{ value: "hc farma san martin", label: "HC Farma San Martin" }
+];
+
 export default function ProductoList() {
-  const { addToCart } = useCart();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [query, setQuery] = useState("");
-  const [activeQuery, setActiveQuery] = useState("");
-  const [notifications, setNotifications] = useState([]);
-  const [showLimitModal, setShowLimitModal] = useState(false);
+	const { addToCart } = useCart();
+	const [products, setProducts] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+	const [query, setQuery] = useState("");
+	const [activeQuery, setActiveQuery] = useState("");
+	const [notifications, setNotifications] = useState([]);
+	const [showLimitModal, setShowLimitModal] = useState(false);
+	const [sectionFilter, setSectionFilter] = useState("todas");
+	const [branchFilter, setBranchFilter] = useState("todas");
+	const [categoriesMap, setCategoriesMap] = useState({});
+	const [branchOptions] = useState(BRANCH_OPTIONS);
 
-  useEffect(() => {
-    fetch(
-      "https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts?per_page=50"
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error("Error al cargar productos");
-        return res.json();
-      })
-      .then((data) => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
+	const selectedBranch = branchOptions.find((b) => b.value === branchFilter);
+	const showBranchNotice = branchFilter !== "todas" && branchFilter !== "hc farma ghandi";
 
-  // Helpers
-  const getImage = (html) =>
-    html?.match(/<img[^>]+src="([^">]+)"/)?.[1] || logo;
+	useEffect(() => {
+		const postsUrl =
+			"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts?per_page=50&_embed=1";
+		const categoriesUrl =
+			"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/categories?per_page=100";
 
-  // Decodifica HTML entities y devuelve texto plano en minúsculas
-  const decodeToText = (html) => {
-    if (!html) return "";
-    try {
-      const div = document.createElement("div");
-      div.innerHTML = html;
-      return (div.textContent || div.innerText || "").replace(/\u00A0/g, " ").toLowerCase();
-    } catch (e) {
-      return String(html).replace(/<[^>]+>/g, "").toLowerCase();
-    }
-  };
+		Promise.all([fetch(postsUrl), fetch(categoriesUrl)])
+			.then(async ([postsRes, categoriesRes]) => {
+				if (!postsRes.ok) throw new Error("Error al cargar productos");
+				if (!categoriesRes.ok) throw new Error("Error al cargar categorias");
 
-  const decodeToPlainText = (html) => {
-    if (!html) return "";
-    try {
-      const div = document.createElement("div");
-      div.innerHTML = html;
-      return (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
-    } catch (e) {
-      return String(html).replace(/<[^>]+>/g, "");
-    }
-  };
+				const [postsData, categoriesData] = await Promise.all([
+					postsRes.json(),
+					categoriesRes.json()
+				]);
 
-  const getPrice = (html) => {
-    if (!html) return "Precio no disponible";
-    const div = document.createElement("div");
-    div.innerHTML = html;
-    const text = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
-    const match = text.match(/precio\s*[:\-]?\s*\$?\s*([0-9][0-9.,]+)/i);
-    return match?.[1] ? `$ ${match[1].trim()}` : "Precio no disponible";
-  };
+				const map = categoriesData.reduce((acc, cat) => {
+					acc[cat.id] = cat.name;
+					return acc;
+				}, {});
 
-  const filteredProducts = products.filter((p) =>
-    decodeToText(p.title?.rendered).includes(activeQuery.trim().toLowerCase())
-  );
+				setCategoriesMap(map);
+				setProducts(postsData);
+				setLoading(false);
+			})
+			.catch((err) => {
+				setError(err.message);
+				setLoading(false);
+			});
+	}, []);
 
-  const handleSearch = () => setActiveQuery(query);
-  const handleClear = () => {
-    setQuery("");
-    setActiveQuery("");
-  };
+	// Helpers
+	const getImage = (html) =>
+		html?.match(/<img[^>]+src="([^">]+)"/)?.[1] || logo;
 
-  const handleAddToCart = (product) => {
-    const wasAdded = addToCart(product);
-    
-    if (wasAdded) {
-      const id = Date.now();
-      const newNotification = {
-        id,
-        message: "✓ Producto añadido al carrito"
-      };
-      
-      setNotifications([newNotification]);
-      
-      setTimeout(() => {
-        setNotifications(prev => prev.filter(n => n.id !== id));
-      }, 2500);
-    } else {
-      setShowLimitModal(true);
-    }
-  };
+	// Decodifica HTML entities y devuelve texto plano en minúsculas
+	const decodeToText = (html) => {
+		if (!html) return "";
+		try {
+			const div = document.createElement("div");
+			div.innerHTML = html;
+			return (div.textContent || div.innerText || "").replace(/\u00A0/g, " ").toLowerCase();
+		} catch (e) {
+			return String(html).replace(/<[^>]+>/g, "").toLowerCase();
+		}
+	};
 
-  return (
-    <div className="hc-container">
-      <Encabezado />
+	const decodeToPlainText = (html) => {
+		if (!html) return "";
+		try {
+			const div = document.createElement("div");
+			div.innerHTML = html;
+			return (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+		} catch (e) {
+			return String(html).replace(/<[^>]+>/g, "");
+		}
+	};
 
-      <div className="cart-notifications-container">
-        {notifications.map((notif) => (
-          <div key={notif.id} className="cart-notification">
-            {notif.message}
-          </div>
-        ))}
-      </div>
+	const getPrice = (html) => {
+		if (!html) return "Precio no disponible";
+		const div = document.createElement("div");
+		div.innerHTML = html;
+		const text = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+		const match = text.match(/precio\s*[:\-]?\s*\$?\s*([0-9][0-9.,]+)/i);
+		return match?.[1] ? `$ ${match[1].trim()}` : "Precio no disponible";
+	};
 
-      {showLimitModal && (
-        <div className="limit-modal-overlay">
-          <div className="limit-modal">
-            <div className="limit-modal-icon">⚠️</div>
-            <h3>Cantidad máxima alcanzada</h3>
-            <p>No puedes agregar más de 2 unidades por producto</p>
-            <button
-              className="btn btn-primary"
-              onClick={() => setShowLimitModal(false)}
-            >
-              Entendido
-            </button>
-          </div>
-        </div>
-      )}
+	const filteredProducts = products.filter((p) => {
+		const normalizedQuery = activeQuery.trim().toLowerCase();
+		const titleMatch = decodeToText(p.title?.rendered).includes(normalizedQuery);
 
-      <main className="hc-main">
-        <section className="producto-list">
+		const categoryNames = (p.categories || [])
+			.map((id) => categoriesMap[id])
+			.filter(Boolean)
+			.map((name) => name.toLowerCase());
 
-          <div className="pl-filter">
-            <div className="pl-search">
-              <input
-                type="text"
-                placeholder="Buscar producto..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-              />
-            </div>
+		const matchesSection =
+			sectionFilter === "todas" || categoryNames.includes(sectionFilter);
 
-            <div className="pl-filter-actions">
-              <button className="btn btn-primary" onClick={handleSearch}>
-                Buscar
-              </button>
-              <button className="btn" onClick={handleClear}>
-                Limpiar
-              </button>
-            </div>
-          </div>
+		const matchesBranch =
+			branchFilter === "todas" || categoryNames.includes(branchFilter);
 
-          {loading && (
-            <>
-              <p>Cargando productos...</p>
-              <div className="pl-grid">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="pl-card pl-skeleton">
-                    <div className="pl-thumb skeleton-img"></div>
-                    <div className="pl-info">
-                      <div className="skeleton-title"></div>
-                      <div className="skeleton-price"></div>
-                      <div className="skeleton-buttons"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </>
-          )}
-          {error && <p>Error: {error}</p>}
+		return titleMatch && matchesSection && matchesBranch;
+	});
 
-          {!loading && filteredProducts.length === 0 && (
-            <p>No se encontraron productos.</p>
-          )}
+	const handleSearch = () => setActiveQuery(query);
+	const handleClear = () => {
+		setQuery("");
+		setActiveQuery("");
+		setSectionFilter("todas");
+		setBranchFilter("todas");
+	};
 
-          <div className="pl-grid">
-            {filteredProducts.map((p) => {
-              const image = getImage(p.content?.rendered);
-              const plainTitle = decodeToPlainText(p.title?.rendered);
-              const price = getPrice(p.content?.rendered);
+	const handleAddToCart = (product) => {
+		const wasAdded = addToCart(product);
 
-              return (
-                <article key={p.id} className="pl-card">
-                  <div className="pl-thumb">
-                    <img 
-                      src={image} 
-                      alt={plainTitle}
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
+		if (wasAdded) {
+			const id = Date.now();
+			const newNotification = {
+				id,
+				message: "✓ Producto añadido al carrito"
+			};
 
-                  <div className="pl-info">
-                    <h3 className="pl-name">{plainTitle}</h3>
-                    <p className="pl-price">{price}</p>
+			setNotifications([newNotification]);
 
-                    <div className="pl-actions">
-                      <Link className="btn btn-secondary" to={`/producto/${p.id}`}>
-                        Detalles
-                      </Link>
-                      <button
-                        className="btn btn-primary"
-                        type="button"
-                        onClick={() => handleAddToCart(p)}
-                      >
-                        🛒 Añadir al carrito
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+			setTimeout(() => {
+				setNotifications((prev) => prev.filter((n) => n.id !== id));
+			}, 2500);
+		} else {
+			setShowLimitModal(true);
+		}
+	};
 
-        </section>
-      </main>
+	return (
+		<div className="hc-container hc-productos">
+			<Encabezado />
 
-      <PiePagina />
-    </div>
-  );
+			<div className="cart-notifications-container">
+				{notifications.map((notif) => (
+					<div key={notif.id} className="cart-notification">
+						{notif.message}
+					</div>
+				))}
+			</div>
+
+			{showLimitModal && (
+				<div className="limit-modal-overlay">
+					<div className="limit-modal">
+						<div className="limit-modal-icon">⚠️</div>
+						<h3>Cantidad máxima alcanzada</h3>
+						<p>No puedes agregar más de 2 unidades por producto</p>
+						<button
+							className="btn btn-primary"
+							onClick={() => setShowLimitModal(false)}
+						>
+							Entendido
+						</button>
+					</div>
+				</div>
+			)}
+
+			<main className="hc-main hc-main-productos">
+				<section className="producto-list">
+
+					<div className="pl-filter">
+						<div className="pl-search">
+							<input
+								type="text"
+								placeholder="Buscar producto..."
+								value={query}
+								onChange={(e) => setQuery(e.target.value)}
+								onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+							/>
+						</div>
+
+						<div className="pl-selects">
+							<label className="pl-select">
+								<span>Sección</span>
+								<select
+									value={sectionFilter}
+									onChange={(e) => setSectionFilter(e.target.value)}
+								>
+									{SECTION_OPTIONS.map((opt) => (
+										<option key={opt.value} value={opt.value}>
+											{opt.label}
+										</option>
+									))}
+								</select>
+							</label>
+
+							<label className="pl-select">
+								<span>Sucursal</span>
+								<select
+									value={branchFilter}
+									onChange={(e) => setBranchFilter(e.target.value)}
+								>
+									{branchOptions.map((opt) => (
+										<option key={opt.value} value={opt.value}>
+											{opt.label}
+										</option>
+									))}
+								</select>
+							</label>
+						</div>
+
+						<div className="pl-filter-actions">
+							<button className="btn btn-primary" onClick={handleSearch}>
+								Buscar
+							</button>
+							<button className="btn btn-outline" onClick={handleClear}>
+								Limpiar
+							</button>
+						</div>
+					</div>
+
+						{showBranchNotice && (
+							<div className="pl-branch-notice">
+								<div className="pl-branch-notice__icon" aria-hidden="true">📢</div>
+								<div className="pl-branch-notice__text">
+									<p className="pl-branch-notice__title">Atención sobre la sucursal</p>
+									<p className="pl-branch-notice__body">
+										Por ahora los pedidos y el stock se gestionan desde HC Farma Ghandi. Elige esa sucursal para confirmar disponibilidad y envíos.
+									</p>
+									{selectedBranch && (
+										<p className="pl-branch-notice__selection">Sucursal seleccionada: {selectedBranch.label}</p>
+									)}
+								</div>
+							</div>
+						)}
+
+					{loading && (
+						<>
+							<p>Cargando productos...</p>
+							<div className="pl-grid">
+								{[...Array(6)].map((_, i) => (
+									<div key={i} className="pl-card pl-skeleton">
+										<div className="pl-thumb skeleton-img"></div>
+										<div className="pl-info">
+											<div className="skeleton-title"></div>
+											<div className="skeleton-price"></div>
+											<div className="skeleton-buttons"></div>
+										</div>
+									</div>
+								))}
+							</div>
+						</>
+					)}
+					{error && <p>Error: {error}</p>}
+
+					{!loading && filteredProducts.length === 0 && (
+						<div className="pl-empty-state">
+							<div className="pl-empty-state__icon" aria-hidden="true">🔎</div>
+							<h3 className="pl-empty-state__title">Sin resultados</h3>
+							<p className="pl-empty-state__body">
+								No pudimos encontrar productos con esta búsqueda. Ajusta la palabra clave o cambia la sucursal para ver más opciones.
+							</p>
+						</div>
+					)}
+
+					<div className="pl-grid">
+						{filteredProducts.map((p) => {
+							const image = getImage(p.content?.rendered);
+							const plainTitle = decodeToPlainText(p.title?.rendered);
+							const price = getPrice(p.content?.rendered);
+
+							return (
+								<article key={p.id} className="pl-card">
+									<div className="pl-thumb">
+										<img 
+											src={image} 
+											alt={plainTitle}
+											loading="lazy"
+											decoding="async"
+										/>
+									</div>
+
+									<div className="pl-info">
+										<h3 className="pl-name">{plainTitle}</h3>
+										<p className="pl-price">{price}</p>
+
+										<div className="pl-actions">
+											<Link className="btn btn-secondary" to={`/producto/${p.id}`}>
+												Detalles
+											</Link>
+											<button
+												className="btn btn-primary"
+												type="button"
+												onClick={() => handleAddToCart(p)}
+											>
+												🛒 Añadir al carrito
+											</button>
+										</div>
+									</div>
+								</article>
+							);
+						})}
+					</div>
+
+				</section>
+			</main>
+
+			<PiePagina />
+		</div>
+	);
 }
