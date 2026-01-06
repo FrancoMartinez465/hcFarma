@@ -15,7 +15,7 @@ const SECTION_OPTIONS = [
 
 const BRANCH_OPTIONS = [
 	{ value: "todas", label: "Todas las sucursales" },
-	{ value: "hc farma ghandi", label: "HC Farma Ghandi" },
+	{ value: "hc farma ghandi", label: "HC Farma Gandhi" },
 	{ value: "hc farma ruta 20", label: "HC Farma Ruta 20" },
 	{ value: "hc farma san martin", label: "HC Farma San Martin" }
 ];
@@ -238,7 +238,7 @@ export default function ProductoList() {
 								<div className="pl-branch-notice__text">
 									<p className="pl-branch-notice__title">Atención sobre la sucursal</p>
 									<p className="pl-branch-notice__body">
-										Por ahora los pedidos y el stock se gestionan desde HC Farma Ghandi. Elige esa sucursal para confirmar disponibilidad y envíos.
+									Por ahora los pedidos y el stock se gestionan desde HC Farma Gandhi. Elige esa sucursal para confirmar disponibilidad y envíos.
 									</p>
 									{selectedBranch && (
 										<p className="pl-branch-notice__selection">Sucursal seleccionada: {selectedBranch.label}</p>
