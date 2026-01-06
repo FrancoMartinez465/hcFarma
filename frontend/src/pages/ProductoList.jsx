@@ -15,7 +15,7 @@ const SECTION_OPTIONS = [
 
 const BRANCH_OPTIONS = [
 	{ value: "todas", label: "Todas las sucursales" },
-	{ value: "hc farma ghandi", label: "HC Farma Gandhi" },
+	{ value: "hc farma gandhi", label: "HC Farma Gandhi" },
 	{ value: "hc farma ruta 20", label: "HC Farma Ruta 20" },
 	{ value: "hc farma san martin", label: "HC Farma San Martin" }
 ];
@@ -35,7 +35,7 @@ export default function ProductoList() {
 	const [branchOptions] = useState(BRANCH_OPTIONS);
 
 	const selectedBranch = branchOptions.find((b) => b.value === branchFilter);
-	const showBranchNotice = branchFilter !== "todas" && branchFilter !== "hc farma ghandi";
+	const showBranchNotice = branchFilter !== "todas" && branchFilter !== "hc farma gandhi";
 
 	useEffect(() => {
 		const postsUrl =
@@ -105,7 +105,7 @@ export default function ProductoList() {
 	};
 
 	const filteredProducts = products.filter((p) => {
-		const normalizedQuery = activeQuery.trim().toLowerCase();
+		const normalizedQuery = (activeQuery || query).trim().toLowerCase();
 		const titleMatch = decodeToText(p.title?.rendered).includes(normalizedQuery);
 
 		const categoryNames = (p.categories || [])
@@ -117,7 +117,9 @@ export default function ProductoList() {
 			sectionFilter === "todas" || categoryNames.includes(sectionFilter);
 
 		const matchesBranch =
-			branchFilter === "todas" || categoryNames.includes(branchFilter);
+			branchFilter === "todas" ||
+			branchFilter === "hc farma gandhi" ||
+			categoryNames.includes(branchFilter);
 
 		return titleMatch && matchesSection && matchesBranch;
 	});
