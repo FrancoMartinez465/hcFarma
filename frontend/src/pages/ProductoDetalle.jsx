@@ -30,6 +30,19 @@ const getPrice = (html) => {
   return match?.[1] ? `$ ${match[1].trim()}` : "Precio no disponible";
 };
 
+// ya no extraemos descripción por separado; mostraremos el body sanitizado
+
+const parseBranches = (html) => {
+  if (!html) return [];
+  const text = html.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
+  const branches = new Set();
+  if (/gandhi|ghandi|ghandi/.test(text)) branches.add("HC Farma Gandhi");
+  if (/ruta\s*20|ruta20/.test(text)) branches.add("HC Farma Ruta 20");
+  if (/san\s*martin|sanmartin/.test(text)) branches.add("HC Farma San Martin");
+  if (branches.size === 3) return ["Todas las sucursales", "HC Farma Gandhi", "HC Farma Ruta 20", "HC Farma San Martin"];
+  return Array.from(branches);
+};
+
 export default function ProductoDetalle() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -63,6 +76,52 @@ export default function ProductoDetalle() {
   const image = useMemo(() => getImage(product?.content?.rendered), [product]);
   const price = useMemo(() => getPrice(product?.content?.rendered), [product]);
   const content = product?.content?.rendered || "";
+  const branches = useMemo(() => parseBranches(content), [content]);
+
+  const getPresentation = (html) => {
+    if (!html) return "";
+    try {
+      const div = document.createElement("div");
+      div.innerHTML = html;
+      const text = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+      const m = text.match(/presentaci[oó]n\s*[:\-]?\s*([^\n\r]+)/i);
+      return m?.[1]?.trim() || "";
+    } catch (e) {
+      return "";
+    }
+  };
+
+  const presentation = useMemo(() => getPresentation(content), [content]);
+
+  const sanitizeContent = (html) => {
+    if (!html) return "";
+    try {
+      // Construir un DOM temporal para eliminar líneas tipo 'Sucursal:' y 'Precio:' del cuerpo
+      const div = document.createElement("div");
+      div.innerHTML = html;
+
+      const shouldRemove = (text) => {
+        const t = (text || "").replace(/\u00A0/g, " ").trim().toLowerCase();
+        return /^sucursal\s*[:\-]/.test(t) || /^precio\s*[:\-]/.test(t);
+      };
+
+      div.querySelectorAll("p, div, li, span").forEach((el) => {
+        const txt = el.textContent || "";
+        if (shouldRemove(txt)) {
+          el.remove();
+        }
+      });
+
+      return div.innerHTML;
+    } catch (e) {
+      // Fallback por regex si el DOM temporal falla
+      return html
+        .replace(/Sucursal\s*[:\-]?\s*[^<\n\r]*/gi, "")
+        .replace(/Precio\s*[:\-]?\s*(?:<[^>]+>\s*)*\$?\s*[0-9][0-9.,]*/gi, "");
+    }
+  };
+
+  const sanitizedContent = useMemo(() => sanitizeContent(content), [content]);
 
   const handleBack = () => {
     if (window.history.length > 1) navigate(-1);
@@ -152,7 +211,20 @@ export default function ProductoDetalle() {
                 </button>
 
                 <h1 className="pd-title">{title}</h1>
-                <p className="pd-price">{price}</p>
+
+                {/** Mostrar solo la badge 'Todas las sucursales' si existe en la lista de branches */}
+                {branches && branches.length > 0 && (
+                  <div className="pd-branches">
+                    {branches
+                      .filter((b) => String(b).toLowerCase().trim() !== "todas las sucursales")
+                      .map((b) => (
+                        <span key={b} className="pd-branch">{b}</span>
+                      ))}
+                  </div>
+                )}
+
+                {/* Bloque de precio decorado (debajo de sucursales, arriba de botones) */}
+                <div className="pd-price">{price}</div>
 
                 <div className="pd-actions">
                   <button className="btn" onClick={handleBack}>Volver</button>
@@ -163,7 +235,7 @@ export default function ProductoDetalle() {
 
                 <div
                   className="pd-body"
-                  dangerouslySetInnerHTML={{ __html: content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                 />
               </div>
             </article>

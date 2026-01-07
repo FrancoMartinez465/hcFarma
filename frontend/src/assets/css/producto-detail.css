@@ -236,6 +236,42 @@
   margin-top: 8px;
 }
 
+.pd-description {
+  padding: 16px 18px;
+  background: #ffffff;
+  border: 1px solid #e6f3ff;
+  border-radius: 12px;
+  color: #374151;
+  margin-top: 6px;
+  font-size: 15px;
+}
+
+.pd-branches {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.pd-branch {
+  background: linear-gradient(135deg, #eef2ff 0%, #e6f3ff 100%);
+  color: #0f172a;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13px;
+  border: 1px solid #cfe9ff;
+}
+
+.pd-presentation {
+  margin: 8px 0 0;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #e6f3ff;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
 .pd-body p {
   margin: 0 0 12px;
 }

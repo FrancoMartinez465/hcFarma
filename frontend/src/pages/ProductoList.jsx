@@ -59,7 +59,24 @@ export default function ProductoList() {
 				}, {});
 
 				setCategoriesMap(map);
-				setProducts(postsData);
+
+				// Añadir parsing de sucursales detectadas en el contenido del post
+				const mapBranches = (html) => {
+					if (!html) return [];
+					const text = html.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
+					const branches = new Set();
+					if (/gandhi|ghandi/.test(text)) branches.add("hc farma gandhi");
+					if (/ruta\s*20|ruta20/.test(text)) branches.add("hc farma ruta 20");
+					if (/san\s*martin|sanmartin/.test(text)) branches.add("hc farma san martin");
+					return Array.from(branches);
+				};
+
+				const enhanced = postsData.map((p) => ({
+					...p,
+					_branches: mapBranches(p.content?.rendered)
+				}));
+
+				setProducts(enhanced);
 				setLoading(false);
 			})
 			.catch((err) => {
@@ -116,10 +133,26 @@ export default function ProductoList() {
 		const matchesSection =
 			sectionFilter === "todas" || categoryNames.includes(sectionFilter);
 
-		const matchesBranch =
-			branchFilter === "todas" ||
-			branchFilter === "hc farma gandhi" ||
-			categoryNames.includes(branchFilter);
+		// Lógica de sucursales basada en bloque 'sucursal' agregado al post
+		const productBranches = p._branches || [];
+		const matchesBranch = (() => {
+			if (branchFilter === "todas") {
+				// Mostrar sólo productos que tienen las 3 sucursales
+				if (productBranches.length > 0) {
+					return [
+						"hc farma gandhi",
+						"hc farma ruta 20",
+						"hc farma san martin"
+					].every((b) => productBranches.includes(b));
+				}
+				return false;
+			}
+			if (productBranches.length > 0) {
+				return productBranches.includes(branchFilter);
+			}
+			// fallback: si no se detectaron branches en el contenido, usar categorías como antes
+			return categoryNames.includes(branchFilter);
+		})();
 
 		return titleMatch && matchesSection && matchesBranch;
 	});
@@ -237,11 +270,11 @@ export default function ProductoList() {
 						{showBranchNotice && (
 							<div className="pl-branch-notice">
 								<div className="pl-branch-notice__icon" aria-hidden="true">📢</div>
-								<div className="pl-branch-notice__text">
-									<p className="pl-branch-notice__title">Atención sobre la sucursal</p>
-									<p className="pl-branch-notice__body">
-									Por ahora los pedidos y el stock se gestionan desde HC Farma Gandhi. Elige esa sucursal para confirmar disponibilidad y envíos.
-									</p>
+									<div className="pl-branch-notice__text">
+										<p className="pl-branch-notice__title">Importante sobre pedidos</p>
+										<p className="pl-branch-notice__body">
+										En esta página, por el momento solo es posible realizar pedidos desde la sucursal HC Farma Gandhi. Si quieres confirmar stock o coordinar envíos, selecciona "HC Farma Gandhi" o contáctanos para más detalles.
+										</p>
 									{selectedBranch && (
 										<p className="pl-branch-notice__selection">Sucursal seleccionada: {selectedBranch.label}</p>
 									)}
