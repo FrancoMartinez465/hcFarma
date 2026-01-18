@@ -42,6 +42,21 @@ export default function Carrito() {
     return match?.[1] ? `$ ${match[1].trim()}` : "Precio no disponible";
   };
 
+  // Precio numérico para cálculos
+  const getNumericPrice = (html) => {
+    if (!html) return 0;
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    const text = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+    const match = text.match(/precio\s*[:\-]?\s*\$?\s*([0-9][0-9.,]+)/i);
+    if (!match) return 0;
+    const value = parseFloat(match[1].replace(/\./g, "").replace(",", "."));
+    return isNaN(value) ? 0 : value;
+  };
+
+  const formatCurrency = (value) =>
+    value.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
   const handleSolicitar = () => {
     if (cartItems.length === 0) {
       alert("El carrito está vacío");
@@ -62,18 +77,14 @@ export default function Carrito() {
     }
   };
 
-  // Calcular precio total del carrito
+  // Calcular precio total del carrito (numérico)
   const getTotalPrice = () => {
     let total = 0;
-    cartItems.forEach(item => {
-      const priceText = getPrice(item.content?.rendered);
-      const priceMatch = priceText.match(/([0-9][0-9.,]+)/);
-      if (priceMatch) {
-        const price = parseFloat(priceMatch[1].replace(/\./g, '').replace(',', '.'));
-        total += price * item.quantity;
-      }
+    cartItems.forEach((item) => {
+      const price = getNumericPrice(item.content?.rendered);
+      total += price * item.quantity;
     });
-    return total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return total;
   };
 
   // Crear un producto combinado con todos los items del carrito para el modal
@@ -139,8 +150,16 @@ export default function Carrito() {
 
       <main className="hc-main">
         <section className="carrito-page">
-          <div className="carrito-header">
-            <h1>🛒 Mi Carrito</h1>
+          <div className="carrito-header carrito-header-banner">
+            <div className="carrito-title">
+              <span className="title-icon" aria-hidden="true">🛒</span>
+              <div className="title-texts">
+                <h1>Mi Carrito</h1>
+                <span className="title-sub">
+                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)} {cartItems.reduce((sum, item) => sum + item.quantity, 0) === 1 ? "producto" : "productos"} • Total estimado: $ {formatCurrency(getTotalPrice())}
+                </span>
+              </div>
+            </div>
             <Link to="/" className="btn btn-secondary">
               ← Seguir comprando
             </Link>
@@ -156,12 +175,14 @@ export default function Carrito() {
               </Link>
             </div>
           ) : (
-            <>
+            <div className="carrito-layout">
               <div className="carrito-items">
                 {cartItems.map((item) => {
                   const image = getImage(item.content?.rendered);
                   const plainTitle = decodeToPlainText(item.title?.rendered);
-                  const price = getPrice(item.content?.rendered);
+                  const priceText = getPrice(item.content?.rendered);
+                  const unitPrice = getNumericPrice(item.content?.rendered);
+                  const subtotal = unitPrice * item.quantity;
 
                   return (
                     <article key={item.id} className="carrito-item">
@@ -171,10 +192,13 @@ export default function Carrito() {
 
                       <div className="item-details">
                         <h3 className="item-name">{plainTitle}</h3>
-                        <p className="item-price">{price}</p>
+                        <p className="item-price">{priceText}</p>
+                        <p className="item-subtotal">
+                          Subtotal: $ {formatCurrency(subtotal)}
+                        </p>
                       </div>
 
-                      <div className="item-quantity">
+                      <div className="item-quantity" aria-label="Control de cantidad">
                         <button
                           className="qty-btn"
                           onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
@@ -182,7 +206,7 @@ export default function Carrito() {
                         >
                           −
                         </button>
-                        <span className="qty-value">{item.quantity}</span>
+                        <span className="qty-value" aria-live="polite">{item.quantity}</span>
                         <button
                           className="qty-btn"
                           onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
@@ -205,36 +229,43 @@ export default function Carrito() {
                 })}
               </div>
 
-              <div className="carrito-actions">
-                <button
-                  className="btn btn-danger"
-                  onClick={() => setShowConfirmClear(true)}
-                >
-                  🗑️ Vaciar carrito
-                </button>
-
-                <button
-                  className="btn btn-success btn-solicitar"
-                  onClick={handleSolicitar}
-                >
-                  <img
-                    src={whatsappIcon}
-                    alt="WhatsApp"
-                    className="wh-icon-cart"
-                  />
-                  Solicitar pedido
-                </button>
-              </div>
-
-              <div className="carrito-summary">
-                <p>
-                  <strong>Total de productos:</strong> {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-                </p>
-                <p className="carrito-total-price">
-                  <strong>Precio total:</strong> $ {getTotalPrice()}
-                </p>
-              </div>
-            </>
+              <aside className="summary-card">
+                <div className="summary-header">
+                  <h3>Resumen de compra</h3>
+                  <p className="summary-note">Los precios pueden variar en farmacia.</p>
+                </div>
+                <div className="summary-body">
+                  <p>
+                    <strong>Productos:</strong> {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
+                  </p>
+                  <div className="summary-line"></div>
+                  <p className="summary-total">
+                    <span>Total estimado</span>
+                    <span>$ {formatCurrency(getTotalPrice())}</span>
+                  </p>
+                </div>
+                <div className="summary-actions">
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => setShowConfirmClear(true)}
+                    aria-label="Vaciar carrito"
+                  >
+                    <span className="btn-icon" aria-hidden="true">🗑️</span>
+                    <span className="btn-label">Vaciar</span>
+                  </button>
+                  <button
+                    className="btn btn-success btn-solicitar"
+                    onClick={handleSolicitar}
+                    aria-label="Solicitar pedido por WhatsApp"
+                  >
+                    <span className="btn-icon" aria-hidden="true">
+                      <img src={whatsappIcon} alt="" className="wh-icon-cart" />
+                    </span>
+                    <span className="btn-label">Solicitar pedido</span>
+                  </button>
+                </div>
+              </aside>
+            </div>
           )}
         </section>
       </main>

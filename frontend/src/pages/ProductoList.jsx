@@ -20,6 +20,12 @@ const BRANCH_OPTIONS = [
 	{ value: "hc farma san martin", label: "HC Farma San Martin" }
 ];
 
+const BRANCH_LABELS = {
+	"hc farma gandhi": "HC Farma Gandhi",
+	"hc farma ruta 20": "HC Farma Ruta 20",
+	"hc farma san martin": "HC Farma San Martin"
+};
+
 export default function ProductoList() {
 	const { addToCart } = useCart();
 	const [products, setProducts] = useState([]);
@@ -121,6 +127,7 @@ export default function ProductoList() {
 		return match?.[1] ? `$ ${match[1].trim()}` : "Precio no disponible";
 	};
 
+
 	const filteredProducts = products.filter((p) => {
 		const normalizedQuery = (activeQuery || query).trim().toLowerCase();
 		const titleMatch = decodeToText(p.title?.rendered).includes(normalizedQuery);
@@ -133,26 +140,10 @@ export default function ProductoList() {
 		const matchesSection =
 			sectionFilter === "todas" || categoryNames.includes(sectionFilter);
 
-		// Lógica de sucursales basada en bloque 'sucursal' agregado al post
 		const productBranches = p._branches || [];
-		const matchesBranch = (() => {
-			if (branchFilter === "todas") {
-				// Mostrar sólo productos que tienen las 3 sucursales
-				if (productBranches.length > 0) {
-					return [
-						"hc farma gandhi",
-						"hc farma ruta 20",
-						"hc farma san martin"
-					].every((b) => productBranches.includes(b));
-				}
-				return false;
-			}
-			if (productBranches.length > 0) {
-				return productBranches.includes(branchFilter);
-			}
-			// fallback: si no se detectaron branches en el contenido, usar categorías como antes
-			return categoryNames.includes(branchFilter);
-		})();
+		const matchesBranch = branchFilter === "todas"
+			? ["hc farma gandhi", "hc farma ruta 20", "hc farma san martin"].every((b) => productBranches.includes(b))
+			: productBranches.includes(branchFilter);
 
 		return titleMatch && matchesSection && matchesBranch;
 	});
@@ -315,6 +306,8 @@ export default function ProductoList() {
 						{filteredProducts.map((p) => {
 							const image = getImage(p.content?.rendered);
 							const plainTitle = decodeToPlainText(p.title?.rendered);
+							const productBranches = p._branches || [];
+							const displayBranches = productBranches.map((b) => BRANCH_LABELS[b] || b);
 							const price = getPrice(p.content?.rendered);
 
 							return (
@@ -330,6 +323,13 @@ export default function ProductoList() {
 
 									<div className="pl-info">
 										<h3 className="pl-name">{plainTitle}</h3>
+										{displayBranches.length > 0 && (
+											<div className="pl-branches" aria-label="Sucursales disponibles">
+												{displayBranches.map((branch) => (
+													<span className="pl-branch-pill" key={branch}>{branch}</span>
+												))}
+											</div>
+										)}
 										<p className="pl-price">{price}</p>
 
 										<div className="pl-actions">

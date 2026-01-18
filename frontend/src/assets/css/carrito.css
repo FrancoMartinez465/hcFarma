@@ -6,6 +6,13 @@
   box-sizing: border-box;
 }
 
+/* Layout de dos columnas */
+.carrito-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
 .carrito-header {
   display: flex;
   justify-content: space-between;
@@ -15,22 +22,94 @@
   gap: 16px;
 }
 
+/* Banner estilizado del encabezado */
+.carrito-header-banner {
+  background: linear-gradient(135deg, #0051a8 0%, #00d4ff 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 7s ease-in-out infinite;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 10px 24px rgba(3, 105, 161, 0.15);
+  border: 1px solid rgba(186, 230, 253, 0.6);
+}
+
+.carrito-header-banner .title-icon {
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+}
+
+.carrito-header-banner h1 {
+  color: #ffffff !important;
+  background: none !important;
+  -webkit-text-fill-color: unset !important;
+  background-clip: initial !important;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+}
+
+.carrito-header-banner .title-sub {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.carrito-header-banner .btn-secondary {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+}
+
+.carrito-header-banner .btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.carrito-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  line-height: 1;
+  color: inherit;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.title-texts {
+  display: flex;
+  flex-direction: column;
+}
+
 .carrito-header h1 {
   font-size: 36px;
   font-weight: 900;
-  color: #0c4a6e;
+  color: #ffffff;
   margin: 0;
   display: flex;
   align-items: center;
   gap: 12px;
   letter-spacing: -0.5px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
-.carrito-header h1 {
-  background: linear-gradient(135deg, #0c4a6e 0%, #0369a1 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.title-sub {
+  font-size: 13px;
+  color: #f6fbff;
+  font-weight: 800;
+  letter-spacing: -0.1px;
+  background: rgba(0, 0, 0, 0.18);
+  padding: 4px 10px;
+  border-radius: 10px;
+  width: fit-content;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.35);
 }
 
 .carrito-header .btn {
@@ -174,6 +253,13 @@
   letter-spacing: -0.3px;
 }
 
+.item-subtotal {
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+  margin: 2px 0 0 0;
+}
+
 /* Control de cantidad */
 .item-quantity {
   display: flex;
@@ -298,16 +384,17 @@
 }
 
 .btn-success {
-  background: #10b981;
-  color: white;
-  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.2);
+  background: linear-gradient(135deg, #10b981 0%, #0b9e6a 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.26);
   font-size: 16px;
   padding: 16px 40px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
 }
 
 .btn-success:hover {
-  background: #059669;
-  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #0fa36e 0%, #0a875b 100%);
+  box-shadow: 0 10px 26px rgba(16, 185, 129, 0.34);
   transform: translateY(-2px);
 }
 
@@ -323,39 +410,113 @@
 }
 
 /* Resumen del carrito */
-.carrito-summary {
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  border: 2px solid #bae6fd;
+.summary-card {
+  position: sticky;
+  top: 90px;
+  align-self: start;
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(3, 105, 161, 0.08);
+  padding: 18px;
 }
 
-.carrito-summary p {
+.summary-header h3 {
+  margin: 0 0 6px 0;
   font-size: 18px;
-  color: #0369a1;
-  margin: 8px 0;
-}
-
-.carrito-summary strong {
-  color: #0c4a6e;
   font-weight: 800;
+  color: #0c4a6e;
 }
 
-.carrito-total-price {
-  font-size: 22px !important;
-  color: #059669 !important;
-  margin-top: 12px !important;
+.summary-note {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  color: #64748b;
 }
 
-.carrito-total-price strong {
-  color: #047857 !important;
+.summary-body p {
+  margin: 6px 0;
+  font-size: 15px;
+  color: #0f172a;
+}
+
+.summary-line {
+  height: 1px;
+  width: 100%;
+  background: #e2e8f0;
+  margin: 8px 0 12px 0;
+}
+
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 800;
+  color: #0c4a6e;
+}
+
+.summary-total span:last-child {
+  font-size: 20px;
+  color: #047857;
+}
+
+.summary-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 14px;
+  /* Tamaño base para los íconos del resumen */
+  --summary-icon-size: 36px;
+}
+
+/* Botones del resumen: ícono centrado y más grande */
+.summary-actions .btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  padding: 18px 20px;
+  min-height: 96px;
+  flex: 1;
+}
+
+.summary-actions .btn .btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--summary-icon-size);
+  line-height: 1;
+}
+
+.summary-actions .btn .btn-label {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.summary-actions .btn.btn-success .btn-label {
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.35);
+}
+
+.summary-actions .btn-solicitar .wh-icon-cart {
+  width: var(--summary-icon-size);
+  height: var(--summary-icon-size);
+}
+
+/* WhatsApp un poco más grande que el tamaño base */
+.summary-actions .btn-solicitar {
+  --summary-icon-size: 65px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .carrito-page {
     padding: 16px;
+  }
+
+  .carrito-layout {
+    grid-template-columns: 1fr;
   }
 
   .carrito-header {
@@ -366,6 +527,15 @@
   .carrito-header h1 {
     font-size: 26px;
     text-align: center;
+  }
+
+  .carrito-title {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .carrito-header-banner {
+    padding: 14px 16px;
   }
 
   .carrito-header .btn {
@@ -661,6 +831,12 @@
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 @media (max-width: 480px) {
