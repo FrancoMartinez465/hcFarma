@@ -44,7 +44,7 @@
 .encabezado-name{ font-weight:800; color:#ffffff; font-size:24px; letter-spacing:-0.3px; text-shadow: 0 2px 4px rgba(0,0,0,0.1) }
 .encabezado-msg{ font-size:13px; color:rgba(255,255,255,0.9); margin-top:1px; font-weight:500 }
 .encabezado-actions{ position:absolute; right:var(--enc-actions-right); top:50%; transform:translateY(-50%); display:flex; gap:8px; align-items:center; z-index:10000; flex-wrap:wrap }
-.encabezado-actions .btn{ margin-left:0; padding:8px 14px; font-size:14px }
+.encabezado-actions .btn{ margin-left:0; padding:10px 20px; font-size:15px; font-weight:600 }
 
 /* Colores de los botones dentro del encabezado */
 .encabezado-actions .btn.btn-primary{
@@ -82,17 +82,17 @@
 }
 
 .encabezado-actions .btn.btn-ghost{
-  background: linear-gradient(135deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.12) 100%);
-  color: #ffffff;
-  border: 1.6px solid rgba(255, 255, 255, 0.58);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14), inset 0 1px 2px rgba(255, 255, 255, 0.25);
-  font-weight: 800;
+  background: #ffffff;
+  color: #047857;
+  border: 2px solid #10b981;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
   letter-spacing: 0.3px;
   transition: all 0.26s ease;
   border-radius: 12px;
   position: relative;
   overflow: hidden;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.28);
+  text-shadow: none;
 }
 
 .encabezado-actions .btn.btn-ghost::before {
@@ -107,9 +107,10 @@
 
 .encabezado-actions .btn.btn-ghost:hover{ 
   transform: translateY(-2px);
-  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.16) 100%);
-  border-color: rgba(255, 255, 255, 0.75);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18), inset 0 1px 3px rgba(255, 255, 255, 0.32);
+  background: #10b981;
+  color: #ffffff;
+  border-color: #059669;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
 }
 
 .encabezado-actions .btn.btn-ghost:hover::before {

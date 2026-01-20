@@ -213,8 +213,10 @@ export default function ProductoList() {
 								type="text"
 								placeholder="Buscar producto..."
 								value={query}
-								onChange={(e) => setQuery(e.target.value)}
-								onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+								onChange={(e) => {
+									setQuery(e.target.value);
+									setActiveQuery(e.target.value);
+								}}
 							/>
 						</div>
 
@@ -246,15 +248,6 @@ export default function ProductoList() {
 									))}
 								</select>
 							</label>
-						</div>
-
-						<div className="pl-filter-actions">
-							<button className="btn btn-primary" onClick={handleSearch}>
-								Buscar
-							</button>
-							<button className="btn btn-outline" onClick={handleClear}>
-								Limpiar
-							</button>
 						</div>
 					</div>
 

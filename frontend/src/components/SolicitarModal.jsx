@@ -100,7 +100,7 @@ export default function SolicitarModal({ product, onClose }) {
 
     // Determinar saludo según la hora actual
     const currentHour = new Date().getHours();
-    let greeting = "Hola";
+    let greeting = "hola";
     if (currentHour >= 8 && currentHour < 12) {
       greeting = "buenos días";
     } else if (currentHour >= 12 && currentHour < 20) {
