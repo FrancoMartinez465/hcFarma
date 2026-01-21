@@ -4,6 +4,7 @@ import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
 import { useCart } from "../context/CartContext";
 import logo from "../assets/images/image.png";
+import ShareModal from "../components/ShareModal";
 import "../assets/css/producto-detail.css";
 
 const API_URL = "https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts";
@@ -52,6 +53,7 @@ export default function ProductoDetalle() {
   const [error, setError] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showLimitModal, setShowLimitModal] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -210,6 +212,13 @@ export default function ProductoDetalle() {
                   Volver a productos
                 </button>
 
+                <button
+                  className="btn btn-link no-arrow share-btn"
+                  onClick={() => setShowShareModal(true)}
+                >
+                  🔗 Compartir
+                </button>
+
                 <h1 className="pd-title">{title}</h1>
 
                 {/** Mostrar solo la badge 'Todas las sucursales' si existe en la lista de branches */}
@@ -244,6 +253,15 @@ export default function ProductoDetalle() {
       </main>
 
       <PiePagina />
+
+      <ShareModal
+        open={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        image={image}
+        title={title}
+        price={price}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+      />
     </div>
   );
 }

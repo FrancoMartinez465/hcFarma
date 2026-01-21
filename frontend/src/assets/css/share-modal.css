@@ -1,0 +1,489 @@
+/* Styles for ShareModal component */
+.share-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2,6,23,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.share-modal {
+  width: 620px;
+  max-width: 94%;
+  background: linear-gradient(180deg,#ffffff 0%, #fbfdff 100%);
+  border-radius: 12px;
+  box-shadow: 0 34px 90px rgba(2,6,23,0.35);
+  overflow: hidden;
+  border: 1px solid rgba(2,6,23,0.06);
+}
+
+.animate-zoom {
+  animation: shareIn 220ms cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes shareIn {
+  from { transform: scale(.98) translateY(6px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.share-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: linear-gradient(90deg,#0d6efd,#2fb6ff);
+}
+
+.share-title {
+  font-weight: 800;
+  font-size: 16px;
+  color: #ffffff;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.share-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.92);
+  margin-top: 4px;
+  opacity: 0.95;
+}
+
+.share-close {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #64748b;
+}
+
+.share-header-left { display: flex; gap: 12px; align-items: center; }
+.share-header-icon {
+  width: 44px; height: 44px; border-radius: 10px; display:flex; align-items:center; justify-content:center;
+  background: linear-gradient(90deg,#0d6efd,#6dd5fa);
+  color: #fff; font-weight: 900; font-size: 18px; box-shadow: 0 8px 24px rgba(13,110,237,0.16);
+}
+
+.share-body {
+  padding: 20px 22px 22px 22px;
+}
+
+.share-divider { height: 1px; background: linear-gradient(90deg, rgba(2,6,23,0.03), rgba(2,6,23,0.08), rgba(2,6,23,0.03)); margin: 12px 0 14px 0; border-radius: 4px; }
+
+.share-preview {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.share-image-wrap {
+  width: 220px;
+  height: 220px;
+  border-radius: 14px;
+  background: linear-gradient(180deg,#ffffff,#eef9ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(2,6,23,0.06);
+  box-shadow: 0 18px 44px rgba(2,6,23,0.10);
+  padding: 10px;
+}
+
+.share-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.share-meta .share-name {
+  font-weight: 900;
+  color: #071232;
+  margin-bottom: 8px;
+  font-size: 20px;
+}
+
+.share-meta .share-price {
+  color: #0564c3;
+  font-weight: 900;
+  font-size: 18px;
+}
+
+.share-link-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.share-link-input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(11,37,69,0.06);
+  background: #f8fbff;
+  color: #062240;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.share-copy-inline {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#0d6efd,#0b5cd8);
+  color: #fff;
+  border: none;
+  font-weight: 800;
+}
+
+.share-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  align-items: center;
+  justify-items: center; /* centra cada botón dentro de su celda */
+}
+
+.share-actions button {
+  padding: 14px 16px;
+  height: 54px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(90deg,#eef2ff,#ffffff);
+  cursor: pointer;
+  font-weight: 800;
+  color: #07203a;
+  display: inline-flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  transition: transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s ease, background-position .6s ease;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.08);
+  background-size: 220% 100%;
+  width: 100%; /* hace que el botón llene la columna para mejor simetría */
+  max-width: 320px; /* evita que crezcan demasiado en pantallas grandes */
+}
+
+.share-actions button:hover {
+  transform: translateY(-10px) scale(1.03);
+  box-shadow: 0 26px 60px rgba(2,6,23,0.18);
+}
+
+/* Make gradients animate and add colored glows on hover */
+.share-action {
+  position: relative;
+  overflow: hidden;
+  background-size: 200% 100%;
+  background-position: 0% 50%;
+}
+.share-action:hover { background-position: 100% 50%; }
+
+.share-action:focus { outline: none; box-shadow: 0 10px 30px rgba(2,6,23,0.12); transform: translateY(-6px); }
+.share-action:active { transform: translateY(-3px) scale(.99); }
+
+/* Icon animation */
+.share-action .share-svg { transition: transform .22s ease, filter .22s ease; transform-origin: center; }
+.share-action:hover .share-svg { transform: translateY(-3px) rotate(-6deg) scale(1.06); filter: drop-shadow(0 6px 10px rgba(0,0,0,0.08)); }
+
+/* Per-platform hover glows */
+.share-whatsapp:hover { box-shadow: 0 18px 40px rgba(6,192,74,0.18); }
+.share-facebook:hover { box-shadow: 0 18px 40px rgba(56,103,210,0.18); }
+.share-instagram:hover { box-shadow: 0 18px 40px rgba(230,80,170,0.16); }
+.share-twitter:hover { box-shadow: 0 18px 40px rgba(29,161,242,0.16); }
+.share-copy:hover { box-shadow: 0 18px 40px rgba(13,110,237,0.16); }
+
+/* Improve contrast for text on colored buttons */
+.share-whatsapp, .share-facebook, .share-instagram, .share-twitter, .share-copy { color: #fff; }
+
+
+.share-action { background: transparent; }
+.share-whatsapp { background: linear-gradient(90deg,#06c04a,#04b84a) !important; color: #fff !important; }
+.share-facebook { background: linear-gradient(90deg,#3b6edb,#274db0) !important; color: #fff !important; }
+.share-instagram { background: radial-gradient(circle at 30% 30%, #feda75 0%, #f09433 25%, #d62976 50%, #962fbf 75%, #4f5bd5 100%) !important; color: #fff !important; }
+.share-twitter { background: linear-gradient(90deg,#1da1f2,#0d95e8) !important; color: #fff !important; }
+.share-copy { background: linear-gradient(90deg,#0d6efd,#0b5cd8) !important; color: #fff !important; }
+
+/* Animated gradient movement for platforms */
+.share-whatsapp { background-position: 0% 50%; }
+.share-facebook { background-position: 0% 50%; }
+.share-instagram { background-position: 0% 50%; }
+.share-twitter { background-position: 0% 50%; }
+.share-copy { background-position: 0% 50%; }
+
+/* Glowing pseudo-element behind button for extra pop */
+.share-actions button::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: -6px;
+  bottom: -6px;
+  z-index: -1;
+  border-radius: 18px;
+  opacity: 0;
+  transition: opacity .22s ease, filter .22s ease;
+}
+.share-whatsapp::before { background: radial-gradient(circle at 30% 30%, rgba(6,192,74,0.18), transparent 40%); }
+.share-facebook::before { background: radial-gradient(circle at 30% 30%, rgba(59,110,219,0.18), transparent 40%); }
+.share-instagram::before { background: radial-gradient(circle at 30% 30%, rgba(230,80,170,0.16), transparent 40%); }
+.share-twitter::before { background: radial-gradient(circle at 30% 30%, rgba(29,161,242,0.16), transparent 40%); }
+.share-copy::before { background: radial-gradient(circle at 30% 30%, rgba(13,110,237,0.14), transparent 40%); }
+
+.share-actions button:hover::before { opacity: 1; filter: blur(8px); }
+
+/* Ripple effect on active click (CSS-only approximation) */
+.share-action::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  background: rgba(255,255,255,0.24);
+  opacity: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.6s cubic-bezier(.2,.9,.2,1), opacity .6s ease;
+  pointer-events: none;
+}
+.share-action:active::after { width: 220px; height: 220px; opacity: 1; transform: translate(-50%, -50%) scale(1); transition: none }
+
+/* Ajuste visual para Twitter (X): fondo más suave, sombra y menor empuje */
+.share-twitter {
+  background: linear-gradient(90deg,#0b1220,#0f1724) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 8px 24px rgba(2,6,23,0.08);
+}
+.share-twitter:hover {
+  box-shadow: 0 18px 50px rgba(15,23,36,0.12);
+  transform: translateY(-6px) scale(1.02);
+}
+.share-twitter::before {
+  background: radial-gradient(circle at 30% 30%, rgba(15,25,40,0.10), transparent 50%);
+}
+
+/* Mejor contraste del SVG o imagen dentro del botón X */
+.share-action.share-twitter .share-svg,
+.share-action.share-twitter .share-button-img {
+  filter: none;
+  opacity: 0.98;
+}
+
+.share-action .share-svg { width: 22px; height: 22px; display: inline-block; margin-right: 8px; fill: #fff; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.08)); }
+.share-action span { display: inline-block; }
+
+/* Twitter text stack: label over sublabel (X) centered */
+.share-action.share-twitter .twitter-text {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1; /* ocupar el espacio restante y permitir centrar */
+  text-align: center;
+  min-width: 0;
+}
+.share-action.share-twitter .twitter-label { display: block; font-weight: 800; }
+.share-action.share-twitter .twitter-sub { display: block; font-size: 13px; margin-top: 4px; opacity: 0.95; width: 100%; text-align: center }
+
+/* Icon image inside action buttons (for WhatsApp custom png) */
+/* Icon wrapper */
+.share-icon-wrap { display:inline-flex; align-items:center; justify-content:center; width:48px; flex:0 0 48px; height:48px; border-radius:0; margin-right:8px }
+
+/* Balanceador visual: añade un espacio invisible después del texto para centrar icon+texto */
+.share-action span:last-child { position: relative; display: inline-block; }
+/* Desktop: slightly smaller label and nudge downward for visual centering */
+/* Reduced font by 2px and nudged down 1px per user's request */
+.share-actions button span:last-child { font-size: 16px; line-height: 1; }
+
+@media (min-width: 541px) {
+  /* aumentar desplazamiento vertical del texto en desktop */
+  .share-actions button span:last-child { transform: translateY(7px); }
+}
+/* only reserve the visual spacer on larger screens to avoid wrapping on mobile */
+@media (min-width: 540px) {
+  .share-action span:last-child::after { content: ''; display: inline-block; width: 48px; height: 1px; margin-left: 8px; visibility: hidden; }
+}
+
+/* Inner image for icons - restored to previous smaller size */
+.share-button-img { width: auto; height: 36px; max-width: 56px; object-fit: contain; display:block }
+
+/* Platform icon sizing: keep images balanced and responsive */
+.share-action.share-whatsapp .share-button-img,
+.share-action.share-instagram .share-button-img,
+.share-action.share-facebook .share-button-img {
+  width: auto;
+  height: 44px;
+  max-width: 64px;
+}
+
+/* Mobile adjustments: smaller icons and tighter text to avoid wrapping */
+@media (max-width: 540px) {
+  .share-actions { grid-template-columns: 1fr; gap: 10px; }
+  .share-actions button { padding: 10px 12px; height: 48px; max-width: none; }
+  .share-icon-wrap { width: 40px; flex: 0 0 40px; height: 40px; margin-right: 8px }
+  .share-button-img { height: 28px; max-width: 48px; }
+  .share-action.share-whatsapp .share-button-img,
+  .share-action.share-instagram .share-button-img,
+  .share-action.share-facebook .share-button-img { height: 36px; max-width: 56px }
+  .share-action span:last-child::after { display: none; }
+  /* mobile: reduced label size (keeps proportional reduction) */
+  .share-actions button span:last-child { font-size: 16px; }
+}
+
+/* Very small phones: slightly smaller text */
+@media (max-width: 360px) {
+  .share-action span:last-child { font-size: 15px; }
+  .share-actions button { padding: 8px 10px; height: 44px }
+  .share-icon-wrap { width: 36px; flex: 0 0 36px; height: 36px }
+  .share-button-img { height: 24px }
+}
+
+/* Remove wrapper backgrounds (user requested no backgrounds behind logos) */
+.instagram-wrap { background: transparent }
+.whatsapp-wrap { background: transparent }
+
+/* Ensure instagram image fits and is visible */
+.instagram-img { border-radius:0; background: transparent; padding:0 }
+.twitter-img { border-radius:0; background: transparent; padding:0 }
+.facebook-img { border-radius:0; background: transparent; padding:0 }
+
+
+.share-action:hover .share-button-img { transform: translateY(-4px) scale(1.06); transition: transform .22s cubic-bezier(.2,.9,.2,1) }
+
+/* Nudge Twitter icon down to align with Instagram visually */
+.share-action.share-twitter .twitter-img { transform: translateY(1px); }
+.share-action.share-twitter .share-icon-wrap { align-items: center }
+
+/* Ajuste de tamaño del icono para Twitter para emparejar visualmente */
+.share-action.share-twitter .share-button-img { height: 42px; max-width: 64px }
+
+/* Desktop-specific: mostrar 'Twitter' y su sublabel '(X)' en stack como en móvil */
+@media (min-width: 900px) {
+  /* Forzar stack y permitir wrapping para que el '(X)' quede en la línea inferior, centrado */
+  .share-action.share-twitter .twitter-text {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    min-width: 0;
+  }
+
+  .share-action.share-twitter .twitter-label {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 16px;
+    line-height: 1.05;
+    margin: 0;
+    transform: translateY(-8px);
+  }
+
+  .share-action.share-twitter .twitter-sub {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    font-size: 13px;
+    margin-top: 4px;
+    opacity: 0.95;
+  }
+
+  /* Posicionar (X) sobre la palabra 'Twitter' para que quede entre la 'i' y la 't' */
+  .share-action.share-twitter .twitter-text { position: relative; }
+  .share-action.share-twitter .twitter-sub {
+    position: absolute;
+    top: 50%;
+    left: 69px; /* ajuste inicial; modificar en caso de necesitar unos px */
+    transform: translate(-50%, -50%);
+    margin-top: 6px; /* ajustar verticalmente para centrar mejor */
+    font-size: 15px; /* mantener tamaño visible */
+    pointer-events: none;
+  }
+
+  /* Mantener el ancho más compacto en escritorio para que la pila luzca igual que en móvil */
+  .share-actions button.share-twitter {
+    max-width: 320px;
+    padding-left: 16px;
+    padding-right: 16px;
+    gap: 8px;
+    height: 54px;
+  }
+
+  .share-action.share-twitter .share-button-img { height: 42px; max-width: 64px }
+}
+
+/* Entrance animation for the whole modal overlay */
+.share-overlay { animation: overlayFade .28s ease both; }
+@keyframes overlayFade { from { opacity: 0 } to { opacity: 1 } }
+
+/* Floating image preview */
+.share-image { animation: floatImage 6s ease-in-out infinite; }
+@keyframes floatImage { 0% { transform: translateY(0) } 50% { transform: translateY(-6px) } 100% { transform: translateY(0) } }
+
+/* Pop-in for action buttons with slight stagger */
+.share-action { animation: popIn .34s cubic-bezier(.2,.9,.2,1) both; }
+.share-actions .share-action:nth-child(1) { animation-delay: .02s }
+.share-actions .share-action:nth-child(2) { animation-delay: .06s }
+.share-actions .share-action:nth-child(3) { animation-delay: .10s }
+.share-actions .share-action:nth-child(4) { animation-delay: .14s }
+.share-actions .share-action:nth-child(5) { animation-delay: .18s }
+.share-actions .share-action:nth-child(6) { animation-delay: .22s }
+@keyframes popIn { from { transform: translateY(8px) scale(.98); opacity: 0 } to { transform: translateY(0) scale(1); opacity: 1 } }
+
+/* Copied state styling */
+.share-copy[data-copied="true"], .share-copy-inline[data-copied="true"] {
+  background: linear-gradient(90deg,#22c55e,#16a34a) !important;
+  box-shadow: 0 18px 40px rgba(34,197,94,0.18) !important;
+  color: #fff !important;
+  transform: translateY(-6px) scale(1.02);
+}
+.share-copy[data-copied="true"] .share-svg { transform: scale(1.02) rotate(-6deg); }
+
+/* small pulse when copied */
+.share-copy[data-copied="true"]::after, .share-copy-inline[data-copied="true"]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  box-shadow: 0 0 0 6px rgba(34,197,94,0.06);
+  animation: pulseCopy .9s ease-out;
+  pointer-events: none;
+}
+@keyframes pulseCopy { from { transform: scale(.98); opacity: .9 } to { transform: scale(1.08); opacity: 0 } }
+
+/* Visually hidden (screen reader only) */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0 }
+
+/* Slight hover shift for copy-inline */
+.share-copy-inline { transition: transform .18s ease, box-shadow .18s ease, background .2s ease }
+.share-copy-inline:hover { transform: translateY(-6px); box-shadow: 0 18px 40px rgba(2,6,23,0.12) }
+
+/* Backdrop blur for modern look */
+.share-overlay { backdrop-filter: blur(4px); }
+
+/* Close button style */
+.share-close { background: rgba(255,255,255,0.85); padding:8px; border-radius:8px; border:1px solid rgba(2,6,23,0.04); }
+.share-close:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(2,6,23,0.08); }
+
+/* lugar para el mensaje copiado */
+.share-copy .share-icon { margin-right: 6px; }
+
+@media (max-width: 720px) {
+  .share-actions { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Responsive */
+@media (max-width: 420px) {
+  .share-modal { width: 95%; }
+  .share-actions { justify-content: center; grid-template-columns: 1fr; }
+}
+
+/* Responsive */
+@media (max-width: 420px) {
+  .share-modal { width: 95%; }
+  .share-actions { justify-content: center; }
+}

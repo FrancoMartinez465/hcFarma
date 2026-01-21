@@ -127,10 +127,22 @@ export default function ProductoList() {
 		return match?.[1] ? `$ ${match[1].trim()}` : "Precio no disponible";
 	};
 
+	const getCode = (html) => {
+		if (!html) return "";
+		const div = document.createElement("div");
+		div.innerHTML = html;
+		const text = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+		// Buscar patrones como "Código:", "EAN:", "Cod:" seguidos de números
+		const match = text.match(/(?:c[oó]digo|ean|cod|code)\s*[:\-]?\s*([0-9]+)/i);
+		return match?.[1]?.trim() || "";
+	};
+
 
 	const filteredProducts = products.filter((p) => {
 		const normalizedQuery = (activeQuery || query).trim().toLowerCase();
 		const titleMatch = decodeToText(p.title?.rendered).includes(normalizedQuery);
+		const code = getCode(p.content?.rendered).toLowerCase();
+		const codeMatch = code.includes(normalizedQuery);
 
 		const categoryNames = (p.categories || [])
 			.map((id) => categoriesMap[id])
@@ -145,7 +157,7 @@ export default function ProductoList() {
 			? ["hc farma gandhi", "hc farma ruta 20", "hc farma san martin"].every((b) => productBranches.includes(b))
 			: productBranches.includes(branchFilter);
 
-		return titleMatch && matchesSection && matchesBranch;
+		return (titleMatch || codeMatch) && matchesSection && matchesBranch;
 	});
 
 	const handleSearch = () => setActiveQuery(query);
@@ -211,7 +223,7 @@ export default function ProductoList() {
 						<div className="pl-search">
 							<input
 								type="text"
-								placeholder="Buscar producto..."
+								placeholder="Buscar por nombre o código/EAN..."
 								value={query}
 								onChange={(e) => {
 									setQuery(e.target.value);

@@ -224,6 +224,32 @@
   transform: translateX(-3px);
 }
 
+/* Ocultar la flecha en botones que tengan la clase .no-arrow */
+.btn-link.no-arrow::before {
+  content: none;
+  display: none;
+}
+
+.btn-link.no-arrow:hover {
+  transform: none;
+}
+
+/* Estilo y animación para el botón compartir para que quede alineado y con micro-animación */
+.btn-link.share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #0b2545;
+  padding: 0;
+  margin-top: 6px;
+  transition: transform .14s ease, color .14s ease;
+}
+
+.btn-link.share-btn:hover {
+  transform: translateX(-4px) scale(1.01);
+  color: #063970;
+}
+
 .pd-body {
   padding: 24px;
   color: #1f2937;
