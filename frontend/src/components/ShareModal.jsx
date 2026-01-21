@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "../assets/css/share-modal.css";
 
 export default function ShareModal({ open, onClose, image, title, price, url }) {
   const [copied, setCopied] = useState(false);
+  const [notice, setNotice] = useState(null);
+  const noticeTimerRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
@@ -10,46 +12,93 @@ export default function ShareModal({ open, onClose, image, title, price, url }) 
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      if (noticeTimerRef.current) {
+        clearTimeout(noticeTimerRef.current);
+        noticeTimerRef.current = null;
+      }
+    };
   }, [open, onClose]);
 
   if (!open) return null;
 
   const shareText = `${title} - ${price}\n${url}`;
-  const publicImage = `${window.location.origin}/image.png`;
+  const publicImage = `https://hcfarma.com.ar/image.png`;
 
-  const handleWhatsApp = () => {
-    // Preferir la imagen del producto si está disponible; si no, usar la imagen pública /image.png
-    let imageUrl = null;
+  // Devuelve una URL con el dominio público `www.hcfarma.com.ar` y https
+  const toPublicUrl = (someUrl) => {
     try {
-      if (image) {
-        if (image.startsWith && (image.startsWith('http://') || image.startsWith('https://'))) {
-          imageUrl = image;
-        } else {
-          // ruta relativa: construir URL absoluta
-          const prefix = image.startsWith('/') ? '' : '/';
-          imageUrl = `${window.location.origin}${prefix}${image}`;
-        }
+      // si es relativa, la comparamos contra window.location.origin
+      const u = someUrl ? new URL(someUrl, window.location.origin) : new URL(publicImage);
+      u.hostname = 'hcfarma.com.ar';
+      // Eliminar puerto (por ejemplo cuando se está en desarrollo :5173)
+      u.port = '';
+      u.protocol = 'https:';
+      return u.toString();
+    } catch (e) {
+      // fallback simple
+      if (!someUrl) return publicImage;
+      if (someUrl.startsWith('http')) return someUrl.replace(/^(https?:)\/\/[^/:]+(:\d+)?/, 'https://hcfarma.com.ar');
+      return `https://hcfarma.com.ar${someUrl.startsWith('/') ? '' : '/'}${someUrl}`;
+    }
+  };
+
+  const handleWhatsApp = async () => {
+    const finalUrl = toPublicUrl(url);
+    const prefix = 'Hola, te comparto este producto que me pareció excelente.\n\n';
+    const text = `${prefix}${title} - ${price}\n\n${finalUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+  };
+  const handleFacebook = async () => {
+    const finalUrl = toPublicUrl(url);
+    const prefix = 'Hola, te comparto este producto que me pareció excelente.\n\n';
+    const text = `${prefix}${title} - ${price}\n\n${finalUrl}`;
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
       }
     } catch (e) {
-      imageUrl = null;
+      // ignore clipboard errors
     }
-
-    const finalImage = imageUrl || publicImage;
-    const textWithImage = `${shareText}\n${finalImage}`;
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(textWithImage)}`, "_blank");
+    // Mostrar notice en lugar de alert; autodesaparece
+    setNotice({
+      title: 'Compartir en Facebook',
+      text: 'Por ahora no es posible compartir directamente en Facebook desde esta ventana. Copiamos el mensaje; pegalo en el cuadro de publicación.',
+      actionLabel: 'Abrir Facebook',
+      actionUrl: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(finalUrl)}&quote=${encodeURIComponent(text)}`,
+      tone: 'info',
+    });
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setNotice(null), 5000);
   };
-  const handleFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank");
-  const handleTwitter = () => window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`, "_blank");
+
+  const handleTwitter = () => {
+    const finalUrl = toPublicUrl(url);
+    const prefix = 'Hola, te comparto este producto que me pareció excelente.\n\n';
+    const text = `${prefix}${title} - ${price}\n\n${finalUrl}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+  };
   const handleInstagram = async () => {
+    const finalUrl = toPublicUrl(url);
+    const prefix = 'Hola, te comparto este producto que me pareció excelente.\n\n';
+    const text = `${prefix}${title} - ${price}\n\n${finalUrl}`;
     try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      window.open("https://www.instagram.com/", "_blank");
-      setTimeout(() => setCopied(false), 2000);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      }
     } catch (e) {
-      window.open("https://www.instagram.com/", "_blank");
+      // ignore
     }
+    setNotice({
+      title: 'Compartir en Instagram',
+      text: 'Por ahora no es posible compartir directamente en Instagram desde esta ventana. Copiamos el mensaje; pegalo en un mensaje directo o en tu historia.',
+      actionLabel: 'Abrir Instagram',
+      actionUrl: 'https://www.instagram.com/',
+      tone: 'info',
+    });
+    if (noticeTimerRef.current) clearTimeout(noticeTimerRef.current);
+    noticeTimerRef.current = setTimeout(() => setNotice(null), 5000);
   };
 
   const handleCopy = async () => {
@@ -65,6 +114,8 @@ export default function ShareModal({ open, onClose, image, title, price, url }) 
   const onOverlayClick = (e) => {
     if (e.target && e.target.classList && e.target.classList.contains("share-overlay")) onClose();
   };
+
+  const hideNotice = () => setNotice(null);
 
   return (
     <div className="share-overlay" role="dialog" aria-modal="true" onClick={onOverlayClick}>
@@ -171,6 +222,29 @@ export default function ShareModal({ open, onClose, image, title, price, url }) 
           </div>
         </div>
       </div>
+      {notice && (
+        <div className="share-notice" role="status" aria-live="polite" onClick={(e) => e.stopPropagation()}>
+          <div className="share-notice__content">
+            <div className="share-notice__text">{notice.text}</div>
+            <div className="share-notice__actions">
+              {notice.actionUrl && (
+                <a
+                  href={notice.actionUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn btn-primary"
+                  onClick={hideNotice}
+                >
+                  {notice.actionLabel || 'Abrir'}
+                </a>
+              )}
+              <button className="btn btn-secondary" onClick={hideNotice}>
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div aria-live="polite" className="sr-only">{copied ? 'Enlace copiado' : ''}</div>
     </div>
   );
