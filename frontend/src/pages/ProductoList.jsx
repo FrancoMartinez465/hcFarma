@@ -137,12 +137,38 @@ export default function ProductoList() {
 		return match?.[1]?.trim() || "";
 	};
 
+	// Extrae secuencias numéricas y las normaliza (quita espacios/guiones)
+	const getAllNumericCodes = (html) => {
+		if (!html) return [];
+		try {
+			const div = document.createElement("div");
+			div.innerHTML = html;
+			const text = (div.textContent || div.innerText || "").replace(/\u00A0/g, " ");
+			// Buscar secuencias con dígitos, espacios o guiones de longitud >= 6
+			const rawSeqs = text.match(/[0-9\-\s]{6,}/g) || [];
+			const normalized = rawSeqs
+				.map((s) => s.replace(/\D/g, ""))
+				.filter((s) => s.length >= 6);
+			return Array.from(new Set(normalized));
+		} catch (e) {
+			return [];
+		}
+	};
+
 
 	const filteredProducts = products.filter((p) => {
 		const normalizedQuery = (activeQuery || query).trim().toLowerCase();
+		const normalizedQueryDigits = normalizedQuery.replace(/\D/g, "");
 		const titleMatch = decodeToText(p.title?.rendered).includes(normalizedQuery);
 		const code = getCode(p.content?.rendered).toLowerCase();
-		const codeMatch = code.includes(normalizedQuery);
+		const numericCodes = getAllNumericCodes(p.content?.rendered);
+		let codeMatch = false;
+		if (normalizedQueryDigits.length >= 6) {
+			// Si el usuario ingresó principalmente dígitos, comparar con códigos numéricos normalizados
+			codeMatch = numericCodes.some((c) => c.includes(normalizedQueryDigits));
+		} else {
+			codeMatch = code.includes(normalizedQuery);
+		}
 
 		const categoryNames = (p.categories || [])
 			.map((id) => categoriesMap[id])
@@ -154,7 +180,7 @@ export default function ProductoList() {
 
 		const productBranches = p._branches || [];
 		const matchesBranch = branchFilter === "todas"
-			? ["hc farma gandhi", "hc farma ruta 20", "hc farma san martin"].every((b) => productBranches.includes(b))
+			? true
 			: productBranches.includes(branchFilter);
 
 		return (titleMatch || codeMatch) && matchesSection && matchesBranch;
