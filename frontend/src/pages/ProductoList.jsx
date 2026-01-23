@@ -67,14 +67,22 @@ export default function ProductoList() {
 				setCategoriesMap(map);
 
 				// Añadir parsing de sucursales detectadas en el contenido del post
+				// Para evitar falsos positivos (p. ej. nombre del sitio en el pie),
+				// analizamos solo el primer bloque del contenido y usamos límites de palabra.
 				const mapBranches = (html) => {
 					if (!html) return [];
-					const text = html.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
-					const branches = new Set();
-					if (/gandhi|ghandi/.test(text)) branches.add("hc farma gandhi");
-					if (/ruta\s*20|ruta20/.test(text)) branches.add("hc farma ruta 20");
-					if (/san\s*martin|sanmartin/.test(text)) branches.add("hc farma san martin");
-					return Array.from(branches);
+					try {
+						// Tomar solo los primeros 1000 caracteres, que normalmente contienen la descripción/producto
+						const snippet = String(html).slice(0, 1000);
+						const text = snippet.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
+						const branches = new Set();
+						if (/\b(gandhi|ghandi)\b/.test(text)) branches.add("hc farma gandhi");
+						if (/\bruta\s*20\b/.test(text)) branches.add("hc farma ruta 20");
+						if (/\bsan\s*martin\b/.test(text)) branches.add("hc farma san martin");
+						return Array.from(branches);
+					} catch (e) {
+						return [];
+					}
 				};
 
 				const enhanced = postsData.map((p) => ({
@@ -179,11 +187,25 @@ export default function ProductoList() {
 			sectionFilter === "todas" || categoryNames.includes(sectionFilter);
 
 		const productBranches = p._branches || [];
+
+		// Si el filtro de sucursal es "todas", mostramos solo productos
+		// que estén presentes en las 3 sucursales principales.
+		const REQUIRED_BRANCHES = [
+			"hc farma gandhi",
+			"hc farma ruta 20",
+			"hc farma san martin"
+		];
+
 		const matchesBranch = branchFilter === "todas"
-			? true
+			? REQUIRED_BRANCHES.every((b) => productBranches.includes(b))
 			: productBranches.includes(branchFilter);
 
-		return (titleMatch || codeMatch) && matchesSection && matchesBranch;
+		// Si hay una búsqueda activa (query no vacía), ignorar filtros de sección y sucursal
+		const isSearching = normalizedQuery.length > 0;
+		const finalMatchesSection = isSearching ? true : matchesSection;
+		const finalMatchesBranch = isSearching ? true : matchesBranch;
+
+		return (titleMatch || codeMatch) && finalMatchesSection && finalMatchesBranch;
 	});
 
 	const handleSearch = () => setActiveQuery(query);
