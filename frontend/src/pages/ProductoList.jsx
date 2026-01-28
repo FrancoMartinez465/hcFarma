@@ -26,6 +26,11 @@ const BRANCH_LABELS = {
 	"hc farma san martin": "HC Farma San Martin"
 };
 
+const SUBCATEGORY_OPTIONS = [
+	{ value: "todas", label: "Todas" },
+	{ value: "masculino", label: "Masculino" },
+	{ value: "femenino", label: "Femenino" }
+];
 export default function ProductoList() {
 	const { addToCart } = useCart();
 	const [products, setProducts] = useState([]);
@@ -37,6 +42,7 @@ export default function ProductoList() {
 	const [showLimitModal, setShowLimitModal] = useState(false);
 	const [sectionFilter, setSectionFilter] = useState("todas");
 	const [branchFilter, setBranchFilter] = useState("todas");
+	const [subFilter, setSubFilter] = useState("todas");
 	const [categoriesMap, setCategoriesMap] = useState({});
 	const [branchOptions] = useState(BRANCH_OPTIONS);
 
@@ -44,39 +50,61 @@ export default function ProductoList() {
 	const showBranchNotice = branchFilter !== "todas" && branchFilter !== "hc farma gandhi";
 
 	useEffect(() => {
-		const postsUrl =
-			"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts?per_page=50&_embed=1";
-		const categoriesUrl =
-			"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/categories?per_page=100";
+		const fetchAllPosts = async () => {
+			try {
+				let allPosts = [];
+				let page = 1;
+				let totalPages = 1;
+				const basePostsUrl =
+					"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts";
 
-		Promise.all([fetch(postsUrl), fetch(categoriesUrl)])
-			.then(async ([postsRes, categoriesRes]) => {
-				if (!postsRes.ok) throw new Error("Error al cargar productos");
-				if (!categoriesRes.ok) throw new Error("Error al cargar categorias");
+				do {
+					const res = await fetch(
+						`${basePostsUrl}?per_page=100&page=${page}&_embed=1`
+					);
 
-				const [postsData, categoriesData] = await Promise.all([
-					postsRes.json(),
-					categoriesRes.json()
-				]);
+					if (!res.ok) throw new Error("Error al cargar productos");
+
+					totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
+					const data = await res.json();
+					allPosts = [...allPosts, ...data];
+					page++;
+				} while (page <= totalPages);
+
+				// categorías
+				const catRes = await fetch(
+					"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/categories?per_page=100"
+				);
+				if (!catRes.ok) throw new Error("Error al cargar categorias");
+				const categoriesData = await catRes.json();
+
+				const normalize = (s) =>
+					String(s || "")
+						.toLowerCase()
+						.normalize("NFD")
+						.replace(/\p{Diacritic}/gu, "")
+						.replace(/[^a-z0-9]+/g, " ")
+						.trim();
 
 				const map = categoriesData.reduce((acc, cat) => {
-					acc[cat.id] = cat.name;
+					acc[cat.id] = {
+						name: cat.name,
+						slug: cat.slug,
+						normName: normalize(cat.name),
+						normSlug: normalize(cat.slug)
+					};
 					return acc;
 				}, {});
 
 				setCategoriesMap(map);
 
-				// Añadir parsing de sucursales detectadas en el contenido del post
-				// Para evitar falsos positivos (p. ej. nombre del sitio en el pie),
-				// analizamos solo el primer bloque del contenido y usamos límites de palabra.
 				const mapBranches = (html) => {
 					if (!html) return [];
 					try {
-						// Tomar solo los primeros 1000 caracteres, que normalmente contienen la descripción/producto
 						const snippet = String(html).slice(0, 1000);
 						const text = snippet.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
 						const branches = new Set();
-						if (/\b(gandhi|ghandi)\b/.test(text)) branches.add("hc farma gandhi");
+						if (/\bgandhi\b/.test(text)) branches.add("hc farma gandhi");
 						if (/\bruta\s*20\b/.test(text)) branches.add("hc farma ruta 20");
 						if (/\bsan\s*martin\b/.test(text)) branches.add("hc farma san martin");
 						return Array.from(branches);
@@ -85,18 +113,21 @@ export default function ProductoList() {
 					}
 				};
 
-				const enhanced = postsData.map((p) => ({
+				const enhanced = allPosts.map((p) => ({
 					...p,
 					_branches: mapBranches(p.content?.rendered)
 				}));
 
 				setProducts(enhanced);
+				console.log("TOTAL PRODUCTOS:", enhanced.length);
 				setLoading(false);
-			})
-			.catch((err) => {
+			} catch (err) {
 				setError(err.message);
 				setLoading(false);
-			});
+			}
+		};
+
+		fetchAllPosts();
 	}, []);
 
 	// Helpers
@@ -178,31 +209,53 @@ export default function ProductoList() {
 			codeMatch = code.includes(normalizedQuery);
 		}
 
+		// Obtener categorías normalizadas (name y slug)
 		const categoryNames = (p.categories || [])
 			.map((id) => categoriesMap[id])
 			.filter(Boolean)
-			.map((name) => name.toLowerCase());
+			.flatMap((c) => [c.normName, c.normSlug]);
+
+		const normalizeValue = (s) =>
+			String(s || "").toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/[^a-z0-9]+/g, " ").trim();
 
 		const matchesSection =
-			sectionFilter === "todas" || categoryNames.includes(sectionFilter);
+			sectionFilter === "todas" || categoryNames.includes(normalizeValue(sectionFilter));
+
+		// Lógica de subcategoría (solo aplicable para Perfumeria)
+		let matchesSub = true;
+		if (sectionFilter === "perfumeria" && subFilter !== "todas") {
+			const contentText = normalizeValue(decodeToText(p.content?.rendered));
+			const sub = normalizeValue(subFilter);
+			const SUB_SYNONYMS = {
+				masculino: ["masculino", "hombre"],
+				femenino: ["femenino", "mujer"]
+			};
+			const synonyms = SUB_SYNONYMS[sub] || [sub];
+			matchesSub = synonyms.some((s) => categoryNames.includes(s) || contentText.includes(s));
+		}
 
 		const productBranches = p._branches || [];
 
-		// Si el filtro de sucursal es "todas", mostramos solo productos
-		// que estén presentes en las 3 sucursales principales.
-		const REQUIRED_BRANCHES = [
-			"hc farma gandhi",
-			"hc farma ruta 20",
-			"hc farma san martin"
-		];
+		// Comportamiento solicitado:
+		// - Si el producto tiene EXACTAMENTE 1 sucursal, debe mostrarse solo cuando
+		//   esa sucursal esté seleccionada (no en 'todas').
+		// - Si el producto no tiene información de sucursales (length === 0),
+		//   lo tratamos como disponible en todas las sucursales.
+		// - Si el producto tiene 2+ sucursales, se muestra en 'todas' y según filtro.
 
-		const matchesBranch = branchFilter === "todas"
-			? REQUIRED_BRANCHES.every((b) => productBranches.includes(b))
-			: productBranches.includes(branchFilter);
+		let matchesBranch;
+		if (branchFilter === "todas") {
+			// Mostrar si no es product exclusivo de 1 sola sucursal
+			matchesBranch = productBranches.length !== 1;
+		} else {
+			// Para una sucursal seleccionada: mostrar si el producto lista esa sucursal
+			// o si no tiene info de sucursales (asumir disponible en todas).
+			matchesBranch = productBranches.length === 0 || productBranches.includes(branchFilter);
+		}
 
 		// Si hay una búsqueda activa (query no vacía), ignorar filtros de sección y sucursal
 		const isSearching = normalizedQuery.length > 0;
-		const finalMatchesSection = isSearching ? true : matchesSection;
+		const finalMatchesSection = isSearching ? true : (matchesSection && matchesSub);
 		const finalMatchesBranch = isSearching ? true : matchesBranch;
 
 		return (titleMatch || codeMatch) && finalMatchesSection && finalMatchesBranch;
@@ -214,6 +267,7 @@ export default function ProductoList() {
 		setActiveQuery("");
 		setSectionFilter("todas");
 		setBranchFilter("todas");
+		setSubFilter("todas");
 	};
 
 	const handleAddToCart = (product) => {
@@ -308,6 +362,23 @@ export default function ProductoList() {
 									))}
 								</select>
 							</label>
+
+							{/* Mostrar subcategoría sólo para Perfumeria */}
+							{sectionFilter === "perfumeria" && (
+								<label className="pl-select">
+									<span>Subcategoría</span>
+									<select
+										value={subFilter}
+										onChange={(e) => setSubFilter(e.target.value)}
+									>
+										{SUBCATEGORY_OPTIONS.map((opt) => (
+											<option key={opt.value} value={opt.value}>
+												{opt.label}
+											</option>
+										))}
+									</select>
+								</label>
+							)}
 						</div>
 					</div>
 
