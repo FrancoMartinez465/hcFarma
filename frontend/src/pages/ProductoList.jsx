@@ -26,6 +26,9 @@ const BRANCH_LABELS = {
 	"hc farma san martin": "HC Farma San Martin"
 };
 
+// Número total de sucursales conocidas (usar para determinar "todas las sucursales")
+const TOTAL_BRANCHES = 3;
+
 const SUBCATEGORY_OPTIONS = [
 	{ value: "todas", label: "Todas" },
 	{ value: "masculino", label: "Masculino" },
@@ -245,8 +248,9 @@ export default function ProductoList() {
 
 		let matchesBranch;
 		if (branchFilter === "todas") {
-			// Mostrar si no es product exclusivo de 1 sola sucursal
-			matchesBranch = productBranches.length !== 1;
+			// Mostrar solo si el producto no es exclusivo de una sola sucursal
+			// y si está disponible en todas las sucursales conocidas o no tiene info.
+			matchesBranch = productBranches.length === 0 || productBranches.length === TOTAL_BRANCHES;
 		} else {
 			// Para una sucursal seleccionada: mostrar si el producto lista esa sucursal
 			// o si no tiene info de sucursales (asumir disponible en todas).

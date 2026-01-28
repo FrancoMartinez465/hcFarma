@@ -40,7 +40,7 @@ const parseBranches = (html) => {
   if (/gandhi|ghandi|ghandi/.test(text)) branches.add("HC Farma Gandhi");
   if (/ruta\s*20|ruta20/.test(text)) branches.add("HC Farma Ruta 20");
   if (/san\s*martin|sanmartin/.test(text)) branches.add("HC Farma San Martin");
-  if (branches.size === 3) return ["Todas las sucursales", "HC Farma Gandhi", "HC Farma Ruta 20", "HC Farma San Martin"];
+  // No marcar automáticamente como "Todas las sucursales" — devolver solo las sucursales detectadas
   return Array.from(branches);
 };
 
