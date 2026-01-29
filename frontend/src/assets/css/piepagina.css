@@ -1,137 +1,171 @@
-/* Footer styles */
-.pie-footer{ 
-  /* Fondo más claro y neutro para mejor lectura */
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  color:#0f172a; 
-  padding: 20px 20px 16px;
-  margin-top: 20px;
-  border-top: 3px solid #e6eef6;
-  position: relative;
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-  font-size: 14px;
+/* --- CAMBIOS DE COLORES (NUEVA PALETA) --- */
+:root {
+  /* Fondo: Degradado celeste más equilibrado (no blanco) */
+  --ff-footer-start: #d8f3ff; /* celeste pálido, más cálido */
+  --ff-footer-end: #bfe8ff;   /* celeste claro un poco más profundo */
+
+  /* Texto: Azul petróleo oscuro (muy legible y suave) en lugar de blanco */
+  --ff-text-on-footer: #2c3e50;
+
+  /* Títulos: Un azul un poco más vibrante para jerarquía */
+  --ff-title-color: #0077b6;
+
+  /* Mantener tus acentos de botones */
+  --ff-cta-start: #0066cc;
+  --ff-cta-end: #00b4d8;
+  --ff-social: #00b4d8;
+  --ff-instagram-start: #ff7a59;
+  --ff-instagram-end: #d6457b;
+
+  /* Acento general usado por algunos enlaces */
+  --ff-accent: #0b6fa4;
+
+  /* Tarjetas: tono muy claro para que no sea blanco puro */
+  --ff-card-bg: #f6fbff;
+  /* Fondo específico para la tarjeta de correo, armoniza con el celeste del footer */
+  --ff-email-bg: #f3fbff;
 }
 
-.pie-footer::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, #0066cc, transparent);
+/* --- AJUSTES DEL FOOTER --- */
+.pie-footer { 
+  background: linear-gradient(180deg, var(--ff-footer-start) 0%, var(--ff-footer-end) 100%);
+  color: var(--ff-text-on-footer); 
+  padding: 8px 10px 8px; /* aún más compacto */
+  margin-top: 8px;
+  /* Borde superior suave en azul claro en lugar de transparente oscuro */
+  border-top: 1px solid #bfeaff; 
+  position: relative;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 13px; /* subir un poco la fuente para mejor legibilidad */
 }
+
+/* Eliminamos la línea brillante 'before' antigua ya que no se ve bien en fondo claro */
+.pie-footer::before { display: none; }
 
 .pie-inner{ 
-  max-width:1300px; 
+  max-width:960px; 
   margin:0 auto; 
   display:flex; 
-  gap: 15px;
+  gap: 6px;
   flex-wrap:wrap; 
   align-items:flex-start;
-  padding-bottom: 8px;
+  padding-bottom: 2px;
 }
 
 .pie-section{ 
-  flex:1 1 250px; 
-  min-width:200px;
+  flex:1 1 180px; 
+  min-width:140px;
 }
 
-.pie-section h4{ 
-  margin:0 0 10px 0; 
-  color:#073b4c;
-  font-size: 16px;
-  font-weight: 800;
-  padding-bottom: 8px;
-  border-bottom: 2px solid;
-  border-image: linear-gradient(90deg, #0b6fa4, #00b4d8) 1;
+.pie-section h4 { 
+  margin: 0 0 6px 0; 
+  color: var(--ff-title-color); /* Color azul fuerte */
+  font-size: 13px;
+  font-weight: 700; /* compacto */
+  text-transform: uppercase; /* opcional */
+  padding-bottom: 3px;
+  border-bottom: 1px solid #dbe9f0; /* Línea separadora suave */
   display: inline-block;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
 }
 
 .pie-card {
-  background: rgba(11, 111, 164, 0.04);
-  border-left: 3px solid rgba(11, 111, 164, 0.95);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin: 8px 0;
-  transition: all 0.18s ease;
+  /* Glassmorphism: semitransparente para integrar con el fondo celeste */
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+
+  /* Borde casi invisible para contener */
+  border: 1px solid rgba(255, 255, 255, 0.6);
+
+  /* Borde izquierdo sutil con identidad */
+  border-left: 2px solid rgba(11, 111, 164, 0.4);
+
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin: 4px 0;
+
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: all 0.16s ease;
 }
 
 .pie-card:hover {
-  background: rgba(11, 111, 164, 0.08);
-  border-left-color: #00b4d8;
-  transform: translateX(3px);
-  box-shadow: 0 6px 18px rgba(11, 111, 164, 0.06);
+  background: rgba(255, 255, 255, 0.95);
+  border-left-color: var(--ff-cta-end);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(3, 37, 65, 0.04);
 }
 
-.pie-line{ 
-  margin: 4px 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #12343b;
+.pie-line { 
+  margin: 3px 0;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #1a3c4d; /* Azul muy oscuro para contraste */
 }
 
 .pie-line strong {
-  color: #0b6fa4;
+  color: #0b6fa4; /* Títulos en azul medio */
   display: block;
-  margin-bottom: 4px;
-  font-weight: 800;
+  margin-bottom: 2px;
+  font-weight: 700;
 }
 
 .pie-line a{ 
-  color:#0b6fa4;
+  color: var(--ff-accent);
   text-decoration:none;
-  transition: all 0.18s ease;
+  transition: color 0.14s ease;
   font-weight: 600;
 }
 
 .pie-line a:hover{ 
-  color:#fff;
-  text-shadow: 0 0 8px rgba(0, 180, 216, 0.5);
+  color: var(--ff-cta-end);
 }
 
-.pie-email {
-  background: rgba(11, 111, 164, 0.06);
+.pie-email { 
+  /* estilo por defecto (se usa en la sección de contacto si queda) */
+  background: var(--ff-card-bg);
   padding: 8px 10px;
   border-radius: 8px;
-  border-left: 3px solid #00b4d8;
-}
+  border-left: 3px solid rgba(0,180,216,0.14);
+  border: 1px solid #e6eff5;
+  box-shadow: 0 1px 4px rgba(3,37,65,0.03);
+ }
 
-.pie-closed {
-  color: #ef4444 !important;
-  font-weight: 600;
-}
-
-.socials{ 
-  display:flex; 
-  gap: 6px;
-  margin-top: 6px;
-  flex-wrap: wrap;
-}
-
-.social{ 
-  background: linear-gradient(135deg, #0b6fa4 0%, #00b4d8 100%);
-  color:#fff; 
-  padding: 8px 14px; 
-  border-radius: 8px; 
-  text-decoration:none; 
-  font-weight:700;
-  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-block;
+.pie-line {
+  margin: 3px 0;
   font-size: 13px;
+  line-height: 1.4;
+  color: #1a3c4d; /* Azul muy oscuro para contraste sobre el vidrio */
+}
+.pie-line strong {
+  color: #0b6fa4; /* Títulos en azul medio */
+  display: block;
+  margin-bottom: 2px;
+  font-weight: 700;
+}
+.social{ 
+  background: var(--ff-social); /* color principal del sitio (turquesa header) */
+  color:#fff; 
+  padding: 5px 8px; 
+  border-radius: 6px; 
+  text-decoration:none; 
+  font-weight:600;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  display: inline-block;
+  font-size: 11px;
 }
 
 .social:nth-child(2) {
-  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  background: linear-gradient(45deg, var(--ff-instagram-start), var(--ff-instagram-end)); /* instagram coral-rosado */
 }
 
 .social:hover{ 
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 102, 204, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(11,30,38,0.08);
 }
 
 .social:nth-child(2):hover {
-  box-shadow: 0 8px 20px rgba(220, 39, 67, 0.4);
+  box-shadow: 0 6px 12px rgba(214,69,123,0.10);
 }
 
 .pie-links-section {
@@ -147,35 +181,32 @@
 .pie-links-section a.footer-cta,
 .pie-footer .pie-links-section a.footer-cta {
   color: #ffffff !important;
-  background: linear-gradient(135deg, #0b6fa4 0%, #00b4d8 100%) !important;
+  background: linear-gradient(135deg, var(--ff-cta-start) 0%, var(--ff-cta-end) 100%) !important; /* gradiente principal del sitio */
   text-decoration: none !important;
-  font-weight: 800;
-  transition: transform 0.22s cubic-bezier(.2,.9,.2,1), box-shadow 0.22s ease, opacity 0.18s ease;
-  padding: 10px 16px;
-  border-radius: 14px;
+  font-weight: 700;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  padding: 6px 10px;
+  border-radius: 8px;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   width: fit-content;
-  font-size: 14px;
-  box-shadow: 0 8px 20px rgba(11, 111, 164, 0.12);
-  border: 1px solid rgba(11, 111, 164, 0.08);
+  font-size: 13px;
+  box-shadow: none;
+  border: 1px solid rgba(11,30,38,0.05);
   position: relative;
   overflow: hidden;
-  transform: translateY(0);
-  will-change: transform;
-  animation: btnFloat 6s ease-in-out infinite;
 }
 
 .pie-links-section a.footer-cta:hover, .pie-footer .pie-links-section a.footer-cta:hover{
-  transform: translateY(-6px) scale(1.04) !important;
-  box-shadow: 0 20px 40px rgba(11, 111, 164, 0.18) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 18px rgba(11,30,38,0.06) !important;
   opacity: 1 !important;
 }
 
 .pie-links-section a.footer-cta:focus, .pie-footer .pie-links-section a.footer-cta:focus{
   outline: none;
-  box-shadow: 0 0 0 6px rgba(11, 111, 164, 0.12);
+  box-shadow: 0 0 0 6px rgba(11,30,38,0.06);
 }
 
 .pie-links-section a.footer-cta::after{
@@ -196,14 +227,7 @@
   transform: skewX(-20deg) translateX(220%);
 }
 
-@keyframes btnFloat {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-  100% { transform: translateY(0); }
-}
-
-/* Pausar la animación al hacer hover o focus para evitar movimiento conflictivo */
-.pie-links-section a.footer-cta:hover, .pie-links-section a.footer-cta:focus { animation-play-state: paused; }
+.pie-links-section a.footer-cta:focus{ outline: none; box-shadow: 0 0 0 6px rgba(10,80,110,0.06); }
 
 /* icono flecha a la derecha */
 .pie-links-section a.footer-cta::before,
@@ -220,26 +244,73 @@
 /* Forzar mayor contraste en visitas */
 .pie-links-section a.footer-cta:visited{ color: #ffffff !important; }
 
-.pie-bottom{ 
-  max-width:1300px; 
-  margin: 12px auto 0; 
-  color:#44566a; 
-  font-size: 13px;
-  text-align:center;
-  padding-top: 12px;
-  border-top: 1px solid rgba(11, 111, 164, 0.06);
+.pie-bottom { 
+  max-width: 1200px; 
+  margin: 15px auto 0; 
+  color: #8fa6b0; /* Gris suave */
+  font-size: 12px;
+  text-align: center;
+  padding-top: 15px;
+  border-top: 1px solid #e6eff5;
   font-weight: 500;
 }
 
+/* Estilos para la tarjeta de email y su CTA */
+.pie-email-card {
+  /* Tarjeta "Pro": fondo blanco limpio con detalle y sombra azules */
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px -4px rgba(0, 102, 204, 0.11);
+  border-left: 3px solid var(--ff-cta-end);
+  border-top: 1px solid rgba(255,255,255,0.5);
+  border-right: 1px solid rgba(0,0,0,0.03);
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.16s ease;
+}
+.pie-email-card:hover { transform: translateY(-1px); }
+.pie-email-card h5 { margin: 0; font-size: 12px; font-weight: 700; color: var(--ff-cta-start); text-transform: uppercase; letter-spacing: 0.3px; display:flex; align-items:center; gap:6px; }
+.pie-email-card .email-text { font-size: 13px; color: #334e68; font-weight: 500; text-decoration: none; background: #f0f7fa; padding: 6px 8px; border-radius: 6px; border: 1px dashed #bcccdc; }
+.pie-email-card .footer-cta { width: 100%; justify-content: center; background: linear-gradient(90deg, var(--ff-cta-start), var(--ff-cta-end)) !important; margin-top: 4px; color: #fff; display: inline-flex; align-items:center; gap:8px; padding: 8px 10px; border-radius:8px; font-size: 13px; }
+
+/* Collapsible branches */
+.branch { margin-bottom: 6px; }
+  .branch-header {
+      width: 100%;
+      text-align: left;
+      background: transparent;
+      border: none !important;
+      appearance: none;
+      padding: 4px 4px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ff-text-on-footer);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+  .branch-header:focus { outline: none; box-shadow: 0 0 0 4px rgba(10,80,110,0.06); border-radius: 6px; }
+  .branch-header .chev { transition: transform 0.14s ease; font-size: 13px; color: var(--ff-title-color); }
+.branch-header[aria-expanded="true"] .chev { transform: rotate(90deg); }
+.branch-content { overflow: hidden; max-height: 0; transition: max-height 0.2s ease; }
+.branch-content.expanded { max-height: 300px; }
+.branch .pie-card { margin: 0; }
+
 @media (max-width:768px){
   .pie-footer { 
-    padding: 18px 14px 12px;
-    margin-top: 18px;
+    padding: 14px 10px 10px;
+    margin-top: 14px;
   }
   
   .pie-inner{ 
     padding:0 10px;
-    gap: 15px;
+    gap: 12px;
     justify-content: space-between;
   }
   
@@ -249,11 +320,11 @@
   }
   
   .pie-section h4 {
-    font-size: 16px;
+    font-size: 14px;
   }
   
   .social{ 
-    padding: 7px 12px;
+    padding: 6px 10px;
     font-size: 12px;
   }
   
@@ -262,11 +333,11 @@
   }
   
   .pie-line {
-    font-size: 14px;
+    font-size: 13px;
   }
   
   .pie-card {
     padding: 6px 8px;
-    margin: 5px 0;
+    margin: 4px 0;
   }
 }
