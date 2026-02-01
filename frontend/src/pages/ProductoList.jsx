@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import "../assets/css/producto-list.css";
 import Encabezado from "../components/Encabezado";
@@ -37,10 +37,24 @@ const SUBCATEGORY_OPTIONS = [
 export default function ProductoList() {
 	const { addToCart } = useCart();
 	const [products, setProducts] = useState([]);
+
+	// Normaliza string: quita diacríticos y deja minúsculas
+	const normalizeString = (s) =>
+		String(s || "")
+			.toLowerCase()
+			.normalize("NFD")
+			.replace(/\p{Diacritic}/gu, "")
+			.replace(/[^a-z0-9]+/g, " ")
+			.trim();
+
+	// Obtener imagen principal desde HTML o usar logo por defecto
+	const getImage = (html) => html?.match(/<img[^>]+src="([^"]+)"/)?.[1] || logo;
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [query, setQuery] = useState("");
 	const [activeQuery, setActiveQuery] = useState("");
+	const [showAutocomplete, setShowAutocomplete] = useState(false);
+	const inputRef = useRef(null);
 	const [notifications, setNotifications] = useState([]);
 	const [showLimitModal, setShowLimitModal] = useState(false);
 	const [sectionFilter, setSectionFilter] = useState("todas");
@@ -133,9 +147,6 @@ export default function ProductoList() {
 		fetchAllPosts();
 	}, []);
 
-	// Helpers
-	const getImage = (html) =>
-		html?.match(/<img[^>]+src="([^">]+)"/)?.[1] || logo;
 
 	// Decodifica HTML entities y devuelve texto plano en minúsculas
 	const decodeToText = (html) => {
@@ -158,6 +169,37 @@ export default function ProductoList() {
 		} catch (e) {
 			return String(html).replace(/<[^>]+>/g, "");
 		}
+	};
+
+	// Función común para verificar si un producto coincide con la consulta
+	const productMatchesQuery = (product, query) => {
+		if (!query) return true;
+
+		const q = normalizeString(query);
+		if (!q) return true;
+		const qTokens = q.split(/\s+/).filter(Boolean);
+
+		const title = decodeToPlainText(product.title?.rendered || "");
+		const titleNorm = normalizeString(title);
+		const titleTokens = titleNorm.split(/\s+/).filter(Boolean);
+
+		// 1) Si la frase completa aparece en el título, OK
+		if (titleNorm.includes(q)) return true;
+
+		// 2) Si todos los tokens aparecen como palabras completas en el título (AND), OK
+		const allTokensPresent = qTokens.every((t) => titleTokens.includes(t));
+		if (allTokensPresent) return true;
+
+		// 3) Buscar por códigos numéricos (EAN/CÓDIGO) si la query contiene dígitos
+		const qDigits = q.replace(/\D/g, "");
+		if (qDigits.length > 0) {
+			const code = (getCode(product.content?.rendered) || "").replace(/\D/g, "");
+			if (code && code.includes(qDigits)) return true;
+			const numericCodes = getAllNumericCodes(product.content?.rendered);
+			if (numericCodes.some((c) => c.includes(qDigits))) return true;
+		}
+
+		return false;
 	};
 
 	const getPrice = (html) => {
@@ -201,7 +243,7 @@ export default function ProductoList() {
 	const filteredProducts = products.filter((p) => {
 		const normalizedQuery = (activeQuery || query).trim().toLowerCase();
 		const normalizedQueryDigits = normalizedQuery.replace(/\D/g, "");
-		const titleMatch = decodeToText(p.title?.rendered).includes(normalizedQuery);
+		const titleMatch = productMatchesQuery(p, activeQuery || query);
 		const code = getCode(p.content?.rendered).toLowerCase();
 		const numericCodes = getAllNumericCodes(p.content?.rendered);
 		let codeMatch = false;
@@ -327,15 +369,70 @@ export default function ProductoList() {
 
 					<div className="pl-filter">
 						<div className="pl-search">
-							<input
-								type="text"
-								placeholder="Buscar por nombre o código/EAN..."
-								value={query}
-								onChange={(e) => {
-									setQuery(e.target.value);
-									setActiveQuery(e.target.value);
-								}}
-							/>
+							<div className="pl-autocomplete-wrapper">
+								<input
+									type="text"
+									placeholder="Buscar por nombre o código/EAN..."
+									value={query}
+									onChange={(e) => {
+										setQuery(e.target.value);
+										setActiveQuery(e.target.value);
+									}}
+									onFocus={() => setShowAutocomplete(true)}
+									onBlur={() => setTimeout(() => setShowAutocomplete(false), 160)}
+									ref={inputRef}
+								/>
+
+								{showAutocomplete && query.trim().length >= 2 && (
+									<div className="pl-autocomplete" role="listbox">
+										{(() => {
+													const q = (query || "").trim();
+													if (!q) return null;
+
+													// Usar la misma lógica de coincidencia que el grid
+													const matched = products.filter((p) => productMatchesQuery(p, q));
+													if (!matched || matched.length === 0) return null;
+
+													const qNorm = normalizeString(q);
+
+													const prepared = matched
+														.map((p) => {
+															const title = decodeToPlainText(p.title?.rendered || "");
+															const titleNorm = normalizeString(title);
+															return { p, title, titleNorm, idx: titleNorm.indexOf(qNorm) };
+														})
+														.sort((a, b) => {
+															if (a.idx === -1 && b.idx === -1) return a.title.localeCompare(b.title);
+															if (a.idx === -1) return 1;
+															if (b.idx === -1) return -1;
+															return a.idx - b.idx;
+														})
+														.slice(0, 6);
+
+													const seen = new Set();
+													return prepared
+														.filter(({ p }) => {
+															if (seen.has(p.id)) return false;
+															seen.add(p.id);
+															return true;
+														})
+														.map(({ p }) => (
+															<Link
+																key={p.id}
+																to={`/producto/${p.id}`}
+																className="pl-autocomplete-item"
+																onMouseDown={(e) => e.preventDefault()}>
+																<img src={getImage(p.content?.rendered)} alt={decodeToPlainText(p.title?.rendered)} />
+																<div className="pl-autocomplete-info">
+																	<div className="pl-autocomplete-title">{decodeToPlainText(p.title?.rendered)}</div>
+																	<div className="pl-autocomplete-price">{getPrice(p.content?.rendered)}</div>
+																</div>
+															</Link>
+														));
+												})()}
+									</div>
+								)}
+							</div>
 						</div>
 
 						<div className="pl-selects">

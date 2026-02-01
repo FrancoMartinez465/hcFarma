@@ -39,7 +39,8 @@
   flex-wrap: wrap;
   box-shadow: 0 8px 24px rgba(0, 102, 204, 0.12), inset 0 1px 3px rgba(255, 255, 255, 0.8);
   position: relative;
-  overflow: hidden;
+  /* permitir que dropdown (autocomplete) se muestre fuera del área del filtro */
+  overflow: visible;
   transition: all 0.3s ease;
 }
 
@@ -847,6 +848,43 @@
   transform: translateY(-3px) scale(1.02);
   text-shadow: 0 8px 26px rgba(0,180,216,0.12);
 }
+
+/* Autocomplete dropdown under search input */
+.pl-autocomplete-wrapper{ position: relative; }
+.pl-autocomplete{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(2,6,23,0.12);
+  border: 1px solid rgba(2,6,23,0.06);
+  z-index: 9999;
+  max-height: 320px;
+  overflow: auto;
+  padding: 8px 6px;
+}
+.pl-autocomplete-item{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.18s ease, transform 0.18s ease;
+  border-bottom: 1px solid rgba(2,6,23,0.04);
+}
+.pl-autocomplete-item:last-child{ border-bottom: none; }
+.pl-autocomplete-item:hover{
+  background: linear-gradient(90deg, rgba(0,180,216,0.03), rgba(0,102,204,0.02));
+  transform: translateY(-2px);
+}
+.pl-autocomplete-item img{ width:46px; height:46px; object-fit:contain; border-radius:6px; background:#fff; border:1px solid rgba(0,0,0,0.04); }
+.pl-autocomplete-info{ display:flex; flex-direction:column; gap:4px; }
+.pl-autocomplete-title{ font-weight:700; font-size:14px; color:#0b213f; max-width:420px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pl-autocomplete-price{ font-weight:800; color:#00b4d8; font-size:13px; }
 
 
 .skeleton-title {
