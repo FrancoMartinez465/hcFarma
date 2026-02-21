@@ -24,7 +24,7 @@
   --enc-btn-review-color: #ffffff; /* texto blanco */
 }
 .encabezado-inner{ max-width:1200px; margin:0; padding:0 20px; padding-right:var(--enc-reserve); display:flex; align-items:center; height:76px }
-.encabezado-right{ display:flex; align-items:center; gap:12px; width:100% }
+.encabezado-right{ display:flex; align-items:center; gap:12px; width:100%; }
 .encabezado-logo{ 
   height:56px; 
   width:auto; 
@@ -329,13 +329,44 @@
 
 @media (max-width:720px){
   /* Mostrar control móvil (burbuja) solo en pantallas pequeñas */
-  .mobile-hamburger{ display:flex; position:fixed; z-index:10050; left:16px; top:85px; box-sizing:border-box; padding:0; background:transparent; border:none }
-  /* visual smaller circle, but keep hit area roomy and centered */
-  .mobile-hamburger.bubble{ width:50px; height:50px; min-width:50px; padding:0; display:grid; place-items:center; border-radius:50%; background: #ffffffcc; box-shadow: 0 6px 20px rgba(0,0,0,0.12); border:2px solid rgba(0,0,0,0.06); }
-  .mobile-hamburger.bubble svg{ width:18px; height:18px }
-  .mobile-hamburger{ touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-  .mobile-hamburger, .mobile-hamburger *{ pointer-events: auto }
-  .hamburger-btn{ width:50px; height:50px }
+  .mobile-hamburger{
+    display:flex;
+    position: static; /* mantenemos layout normal en el flujo */
+    margin-left: 8px; /* mueve el botón dentro del flujo (ajustable) */
+    margin-top: 3px;  /* lo baja un poco para quedar en la franja gris) */
+    /* Mantener z-index alto para capturar clicks si hace falta */
+    z-index: 10080;
+    box-sizing:border-box;
+    background:transparent;
+    border:none;
+    /* tamaño visual original de la burbuja */
+    width:44px;
+    height:44px;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor:pointer;
+  }
+  .mobile-hamburger.bubble{
+    width:44px;
+    height:44px;
+    min-width:44px;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background: #ffffffcc;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    border:2px solid rgba(0,0,0,0.06);
+  }
+  /* mantener icono alineado con el centro del globo */
+  .mobile-hamburger.bubble svg{ width:20px; height:20px }
+  .hamburger-btn{ width:44px; height:44px }
+  /* no permitir que el SVG capture eventos: el click debe llegar al button y estar centrado */
+  .mobile-hamburger svg { pointer-events: none }
 
   /* Ocultar los selects de Sección y Sucursal en la vista móvil */
   .pl-select { display: none !important }
@@ -343,12 +374,12 @@
 
 /* Overlay that covers the rest of the screen when menu is open */
 .mobile-menu-overlay{
-  position:fixed; inset:0; background: rgba(0,0,0,0.36); z-index:10000; display:flex; align-items:flex-start; justify-content:flex-start;
+  position:fixed; inset:0; background: rgba(0,0,0,0.36); z-index:10950; display:flex; align-items:flex-start; justify-content:flex-start;
 }
 
 .mobile-menu-panel{
   width: 280px; max-width:85%; height:100vh; background: #ffffff; box-shadow: 4px 0 24px rgba(0,0,0,0.25);
-  padding: 18px 14px; display:flex; flex-direction:column; gap:16px; overflow:auto;
+  padding: 18px 14px; display:flex; flex-direction:column; gap:16px; overflow:auto; z-index:10960;
 }
 
 .mobile-menu-header{ display:flex; justify-content:flex-end }
@@ -407,25 +438,24 @@
 /* En desktop preferimos mostrar el control para previsualizar; si querés ocultarlo en escritorio
    se puede volver a activar la media query anterior. */
 
-/* Burbuja fija (esquina superior izquierda) */
+/* Burbuja (botón) — ahora en flujo normal, sin position:fixed para evitar desajuste
+   entre lo visual y la zona click. Se usa flow/margin para colocarlo en la franja gris. */
 
 .mobile-hamburger.bubble{
-  position:fixed;
-  top:97px; /* posición por defecto (restaurada a la original) */
-  left:16px;
-  min-width:64px;
-  height:64px;
+  position: static;
+  min-width:44px;
+  width:44px;
+  height:44px;
+  padding:0;
   background: #ffffffcc;
-  backdrop-filter: blur(4px);
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   z-index:10002;
-  padding:10px;
   border: 2px solid rgba(0,0,0,0.06);
-  transition: top .32s cubic-bezier(.2,.9,.25,1), transform .22s cubic-bezier(.2,.9,.3,1), box-shadow .22s ease, background .22s ease;
+  transition: transform .22s cubic-bezier(.2,.9,.3,1), box-shadow .22s ease, background .22s ease;
 }
 
 .mobile-hamburger.bubble .dash{
@@ -439,29 +469,12 @@
 }
 .mobile-hamburger.bubble:hover{ transform: scale(1.04) }
 
-/* Estado "open": subir la burbuja hacia arriba sin transformar las líneas (mantener 3 guiones) */
+/* Ajustes visuales del icono y área clicable */
+.mobile-hamburger.bubble svg{ width:24px; height:24px }
+.hamburger-btn{ width:48px; height:48px }
+.mobile-hamburger{ padding:0 8px; min-width:64px }
+.mobile-hamburger svg { pointer-events: none }
 
-.mobile-hamburger.bubble.open{
-  transform: scale(1);
-  top: 8px; /* cuando está abierto, subir hacia arriba */
-  box-shadow: 0 18px 46px rgba(11,111,160,0.18), 0 6px 14px rgba(0,0,0,0.06);
-  background: rgba(255,255,255,0.98);
-  animation: bubbleLift .26s ease;
-}
-.mobile-hamburger.bubble.open .dash{ opacity: 1; background:#0b6fa0 }
-
-@keyframes bubbleLift {
-  0% { transform: translateY(0) scale(.98); }
-  60% { transform: translateY(-6px) scale(1.02); }
-  100% { transform: translateY(-0px) scale(1); }
-}
-
-/* ajustar posición cuando está abierto en pantallas pequeñas (panel usa % ancho) */
-@media (max-width: 900px){
-  /* Mantener la burbuja en la misma columna izquierda en móvil, solo ajustar top */
-  .mobile-hamburger.bubble{ top:81px; left:12px }
-  .mobile-hamburger.bubble.open{ top:12px }
-}
 
 /* Overlay fade + panel slide L->R */
   .mobile-menu-overlay{
@@ -531,6 +544,69 @@
   margin-right: 24px !important; /* separar el texto del punto */
   width:6px !important;
   height:6px !important;
+}
+
+/* Simplified mobile rules: keep button in normal flow (no absolute/fixed) so hitbox
+   matches visual and it sits in the grey band under the header. */
+@media (max-width:720px){
+  .mobile-hamburger.bubble{
+    position: static !important;
+    margin-left: -1px !important;
+    margin-top: 3px !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 11000 !important;
+    background: #ffffffcc !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important;
+    border: 2px solid rgba(0,0,0,0.06) !important;
+    pointer-events: auto !important;
+  }
+
+  .mobile-hamburger{
+    width:44px !important;
+    height:44px !important;
+    padding:0 !important;
+    margin:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+  }
+
+  .mobile-hamburger.bubble svg{ pointer-events: none !important; width:20px !important; height:20px !important; display:block !important }
+}
+
+/* Posicionamiento cuando el botón está fuera del header (clase .outside) */
+@media (max-width:720px){
+  .mobile-hamburger.outside{
+    position: absolute !important;
+    top: 81px !important; /* moved 3px down */
+    left: 5px !important; /* moved 4px left */
+    width: 46px !important;
+    height: 46px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    z-index: 11005 !important;
+    background: #ffffffcc !important;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12) !important;
+    border: 2px solid rgba(0,0,0,0.06) !important;
+    transition: top .18s ease, left .12s ease, transform .18s ease;
+  }
+  .mobile-hamburger.outside svg{ pointer-events: none !important; display:block !important }
+
+  /* Cuando el menú está abierto, elevar la burbuja para no tapar el panel */
+  .mobile-hamburger.outside.open{
+    top: 12px !important; /* aparece arriba mientras el panel está abierto */
+    left: 12px !important; /* ajustado junto al borde del panel */
+    transform: translateY(0) !important;
+  }
 }
 
 

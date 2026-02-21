@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../assets/css/top-action-buttons.css";
 
-export default function TopActionButtons() {
+export default function TopActionButtons({ hide = false }) {
+  if (hide) return null;
+
   return (
     <div className="top-action-buttons-fixed-wrapper">
       <div className="top-action-buttons">
