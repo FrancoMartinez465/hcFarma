@@ -1,0 +1,97 @@
+.top-action-buttons-fixed-wrapper { position: relative; }
+
+/* Centered, fixed pill that holds the tab-like buttons */
+.top-action-buttons{
+  position: fixed;
+  left: 50%;
+  top: calc(76px + 19px);
+  transform: translateX(-50%);
+  z-index: 10001;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: min(1100px, calc(100% - 48px));
+  padding: 0; /* botones controlan su propio relleno */
+  box-sizing: border-box;
+  background: transparent; /* let header color show through */
+  /* Contenedor sin borde: eliminamos el rectángulo azul */
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+  box-shadow: none;
+  opacity: 0;
+  animation: slideDown 360ms cubic-bezier(.2,.9,.3,1) forwards;
+}
+
+@keyframes slideDown {
+  from { transform: translateX(-50%) translateY(-6px); opacity: 0 }
+  to { transform: translateX(-50%) translateY(0); opacity: 1 }
+}
+
+/* Individual tab buttons styled so they appear joined in the center */
+.top-action-buttons .tab-btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 34px;
+  border-radius: 0;
+  border: none; /* botón sin borde: el contenedor define el marco */
+  background: #ffffff; /* botones blancos dentro del contenedor */
+  color: #0077c1; /* texto azul HcFarma */
+  font-weight: 700;
+  text-decoration: none;
+  font-size: 15px;
+  min-width: 130px;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+}
+
+/* No usamos márgenes negativos: el separador lo hace el border-right del primer botón */
+.top-action-buttons .tab-btn + .tab-btn { margin-left: 0; }
+
+/* Productos tendrá fondo blanco y texto azul; el separador es border-right */
+.top-action-buttons .tab-btn:first-child {
+  background: #ffffff;
+  color: #0077c1;
+  border-right: 2px solid #00a0df;
+  box-shadow: inset 0 -4px 8px rgba(0,0,0,0.03), 0 6px 18px rgba(3,102,214,0.06);
+}
+.top-action-buttons .tab-btn:last-child { }
+
+.top-action-buttons .tab-btn:hover{
+  background-color: rgba(255,255,255,0.9);
+  transform: translateY(-2px);
+}
+
+/* Hover/active tweak specifically for the Productos button */
+.top-action-buttons .tab-btn:first-child:hover{
+  background: #ffffff;
+  filter: brightness(0.98);
+  transform: translateY(-2px);
+}
+
+/* If Productos should appear selected (alt state) */
+.top-action-buttons .tab-btn--primary-active{
+  background: linear-gradient(135deg,#e6f7ff 0%, #ffffff 100%);
+  color: #005b8a;
+  box-shadow: inset 0 -6px 10px rgba(0,122,180,0.06), 0 8px 20px rgba(3,102,214,0.08);
+  border-color: rgba(0,122,180,0.14);
+}
+
+/* Active / primary appearance */
+.top-action-buttons .tab-btn--outline{
+  background: linear-gradient(135deg, #0077c1 0%, #00a9d6 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(0, 166, 217, 0.12);
+  border-color: transparent;
+}
+
+.top-action-buttons .tab-btn:focus{ outline: none; box-shadow: 0 6px 12px rgba(3,102,214,0.06); }
+
+  @media (max-width: 768px){
+  .top-action-buttons{ top: calc(64px + 15px); width: calc(100% - 32px); padding: 6px; }
+  .top-action-buttons .tab-btn{ padding:8px 14px; font-size:14px; min-width:110px }
+  .top-action-buttons .tab-btn + .tab-btn { margin-left: -2px; }
+}
+
+/* spacer to avoid overlap with page content */
+.top-action-buttons-spacer{ display:block; height: 52px }

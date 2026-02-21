@@ -5,6 +5,7 @@ import Horario from "./pages/Horario";
 import ProductoDetalle from "./pages/ProductoDetalle";
 import Carrito from "./pages/Carrito";
 import CartIcon from "./components/CartIcon";
+import TopActionButtons from "./components/TopActionButtons";
 
 export default function App() {
   // Normaliza la URL cuando alguien llega con /inicio u otra ruta previa al hash
@@ -19,6 +20,7 @@ export default function App() {
     <div className="app-with-header">
       <HashRouter>
         <CartIcon />
+        <TopActionButtons />
         <Routes>
           <Route path="/" element={<Navigate to="/productos" replace />} />
           <Route path="/productos" element={<ProductoList />} />

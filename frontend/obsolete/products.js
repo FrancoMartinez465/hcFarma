@@ -1,8 +1,4 @@
-
-
-// Productos de ejemplo removidos — el backend (WordPress) proveerá los datos reales.
+// Copia del placeholder `services/products.js` movido a obsolete.
 export const branches = [];
-
 export const products = [];
-
 export default { branches, products };

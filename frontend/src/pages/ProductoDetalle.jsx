@@ -259,6 +259,7 @@ export default function ProductoDetalle() {
 
       <main className="hc-main">
         <section className="pd-wrapper">
+          {/* TopActionButtons ahora se renderiza globalmente en App.jsx */}
           {loading && (
             <article className="pd-card pd-skeleton">
               <div className="pd-media skeleton-img-detail"></div>

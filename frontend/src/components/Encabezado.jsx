@@ -15,8 +15,7 @@ export default function Encabezado() {
           </div>
 
           <div className="encabezado-actions">
-            <Link to="/" className="btn btn-ghost">Productos</Link>
-            <Link to="/horario" className="btn btn-ghost">Ver horarios</Link>
+            {/* botones movidos a TopActionButtons para control de posición */}
           </div>
         </div>
       </div>

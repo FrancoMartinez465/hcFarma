@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../assets/css/horario.css";
 import Encabezado from "../components/Encabezado";
+import TopActionButtons from "../components/TopActionButtons";
 import PiePagina from "../components/PiePagina";
 
 
@@ -94,6 +95,7 @@ export default function Horario() {
 	return (
 		<div>
 			<Encabezado />
+			<TopActionButtons />
 			<main className="horario-container">
 				<h2 className="horario-title">Sucursales y horarios</h2>
 

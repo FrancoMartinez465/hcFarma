@@ -364,10 +364,12 @@ export default function ProductoList() {
 				</div>
 			)}
 
-			<main className="hc-main hc-main-productos">
-				<section className="producto-list">
+				<main className="hc-main hc-main-productos">
+					<section className="producto-list">
 
-					<div className="pl-filter">
+						{/* TopActionButtons ahora se renderiza globalmente en App.jsx */}
+
+						<div className="pl-filter">
 						<div className="pl-search">
 							<div className="pl-autocomplete-wrapper">
 								<input
