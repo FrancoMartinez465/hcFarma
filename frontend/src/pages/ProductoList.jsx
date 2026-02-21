@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import "../assets/css/producto-list.css";
 import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
@@ -35,6 +35,7 @@ const SUBCATEGORY_OPTIONS = [
 	{ value: "femenino", label: "Femenino" }
 ];
 export default function ProductoList() {
+	const location = useLocation();
 	const { addToCart } = useCart();
 	const [products, setProducts] = useState([]);
 
@@ -67,7 +68,25 @@ export default function ProductoList() {
 	const showBranchNotice = branchFilter !== "todas" && branchFilter !== "hc farma gandhi";
 
 	useEffect(() => {
-		const fetchAllPosts = async () => {
+		// Sincronizar filtros desde query params (para que los links del MobileMenu funcionen inmediatamente)
+		const syncFiltersFromQuery = () => {
+			try {
+				const params = new URLSearchParams(location.search || "");
+				const s = params.get("section");
+				const b = params.get("branch");
+				const sub = params.get("sub");
+				if (s && s !== sectionFilter) setSectionFilter(s);
+				if (b && b !== branchFilter) setBranchFilter(b);
+				if (sub && sub !== subFilter) setSubFilter(sub);
+			} catch (e) {
+				// ignore
+			}
+		};
+
+		syncFiltersFromQuery();
+	}, [location.search]);
+		useEffect(() => {
+			const fetchAllPosts = async () => {
 			try {
 				let allPosts = [];
 				let page = 1;
@@ -144,8 +163,8 @@ export default function ProductoList() {
 			}
 		};
 
-		fetchAllPosts();
-	}, []);
+			fetchAllPosts();
+		}, []);
 
 
 	// Decodifica HTML entities y devuelve texto plano en minúsculas

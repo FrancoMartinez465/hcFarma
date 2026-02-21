@@ -315,3 +315,215 @@
     right: -6px;
   }
 }
+
+/* -------------------------- */
+/* Mobile hamburger and panel */
+/* -------------------------- */
+.mobile-hamburger{
+  display:none; /* oculto por defecto en desktop; se mostrará solo en móvil */
+  -webkit-appearance:none; appearance:none;
+  border:0; background:transparent; padding:8px; margin-right:6px; cursor:pointer;
+  width:44px; height:44px; align-items:center; justify-content:center; border-radius:8px;
+}
+.mobile-hamburger span{ display:block; height:3px; background:#fff; margin:5px 0; border-radius:2px; transition: all .18s ease }
+
+@media (max-width:720px){
+  /* Mostrar control móvil (burbuja) solo en pantallas pequeñas */
+  .mobile-hamburger{ display:flex; position:fixed; z-index:10001; left:16px; top:81px }
+
+  /* Ocultar los selects de Sección y Sucursal en la vista móvil */
+  .pl-select { display: none !important }
+}
+
+/* Overlay that covers the rest of the screen when menu is open */
+.mobile-menu-overlay{
+  position:fixed; inset:0; background: rgba(0,0,0,0.36); z-index:10000; display:flex; align-items:flex-start; justify-content:flex-start;
+}
+
+.mobile-menu-panel{
+  width: 280px; max-width:85%; height:100vh; background: #ffffff; box-shadow: 4px 0 24px rgba(0,0,0,0.25);
+  padding: 18px 14px; display:flex; flex-direction:column; gap:16px; overflow:auto;
+}
+
+.mobile-menu-header{ display:flex; justify-content:flex-end }
+.mobile-menu-close{ font-size:28px; background:transparent; border:0; cursor:pointer; padding:4px }
+
+.mobile-menu-section h4{ margin:6px 0 8px; font-size:14px; color:#0b728e; font-weight:800 }
+.mobile-menu-section ul{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px }
+.mobile-menu-section li a{ display:block; padding:8px 10px; color:#05343f; text-decoration:none; border-radius:8px; font-weight:700 }
+.mobile-menu-section li a:hover{ background: rgba(6,119,204,0.06) }
+
+/* Subcategorías anidadas bajo la sección (alineado y estilo más formal) */
+.mobile-subcategories{
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding-left: 0;
+  margin-left: 18px;
+  border-left: 1px solid rgba(11,111,160,0.06);
+}
+.mobile-subcategories{
+  list-style: none;
+  margin: 8px 0 0 0;
+  padding-left: 0;
+  margin-left: 12px; /* ajustar para acercar la línea al borde como en el dibujo */
+  border-left: 2px solid rgba(11,111,160,0.14);
+  padding-left: 10px; /* espacio interior reducido */
+  background: linear-gradient(90deg, rgba(11,111,160,0.01), transparent);
+  border-radius: 6px;
+}
+.mobile-subcategories li{
+  margin:8px 0;
+  display:flex;
+  align-items:center;
+}
+.mobile-subcategories li::before{
+  content: "";
+  width:6px;
+  height:6px;
+  background:#0a566e; /* tono más sobrio */
+  border-radius:50%;
+  flex:0 0 6px;
+  margin-right:18px; /* mover texto un poco más a la derecha respecto al punto */
+  opacity:1;
+}
+.mobile-subcategories li a{ font-size:14px; font-weight:600; color:#0a566e; text-decoration:none }
+.mobile-subcategories li a:hover{ text-decoration:underline; color:#05343f }
+
+/* Hacer los items principales más sobrios */
+.mobile-menu-section ul > li > div > a{ color:#05343f; font-weight:700; display:block; padding:10px 8px; border-radius:6px }
+.mobile-menu-section ul > li > div > a:hover{ background: rgba(6,119,204,0.04) }
+.mobile-menu-section h4{ color:#074a6a; font-size:15px; margin-bottom:10px; font-weight:800 }
+
+/* Separadores sutiles entre secciones */
+.mobile-menu-section + .mobile-menu-section{ margin-top:12px; padding-top:12px; border-top:1px solid rgba(6,119,204,0.04) }
+
+/* asegurarse de que el menú sea solo para pantallas pequeñas (ocultar en escritorio) */
+/* En desktop preferimos mostrar el control para previsualizar; si querés ocultarlo en escritorio
+   se puede volver a activar la media query anterior. */
+
+/* Burbuja fija (esquina superior izquierda) */
+
+.mobile-hamburger.bubble{
+  position:fixed;
+  top:97px; /* posición por defecto (restaurada a la original) */
+  left:16px;
+  min-width:64px;
+  height:64px;
+  background: #ffffffcc;
+  backdrop-filter: blur(4px);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  z-index:10002;
+  padding:10px;
+  border: 2px solid rgba(0,0,0,0.06);
+  transition: top .32s cubic-bezier(.2,.9,.25,1), transform .22s cubic-bezier(.2,.9,.3,1), box-shadow .22s ease, background .22s ease;
+}
+
+.mobile-hamburger.bubble .dash{
+  display:block;
+  width:18px;
+  height:3px;
+  background:#0b6fa0;
+  border-radius:3px;
+  margin:3px 0;
+  transition: opacity .18s ease, transform .22s ease, background .18s ease;
+}
+.mobile-hamburger.bubble:hover{ transform: scale(1.04) }
+
+/* Estado "open": subir la burbuja hacia arriba sin transformar las líneas (mantener 3 guiones) */
+
+.mobile-hamburger.bubble.open{
+  transform: scale(1);
+  top: 8px; /* cuando está abierto, subir hacia arriba */
+  box-shadow: 0 18px 46px rgba(11,111,160,0.18), 0 6px 14px rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.98);
+  animation: bubbleLift .26s ease;
+}
+.mobile-hamburger.bubble.open .dash{ opacity: 1; background:#0b6fa0 }
+
+@keyframes bubbleLift {
+  0% { transform: translateY(0) scale(.98); }
+  60% { transform: translateY(-6px) scale(1.02); }
+  100% { transform: translateY(-0px) scale(1); }
+}
+
+/* ajustar posición cuando está abierto en pantallas pequeñas (panel usa % ancho) */
+@media (max-width: 900px){
+  /* Mantener la burbuja en la misma columna izquierda en móvil, solo ajustar top */
+  .mobile-hamburger.bubble{ top:81px; left:12px }
+  .mobile-hamburger.bubble.open{ top:12px }
+}
+
+/* Overlay fade + panel slide L->R */
+.mobile-menu-overlay{
+  position:fixed; inset:0; background: rgba(0,0,0,0.08); z-index:10000; display:flex; align-items:flex-start; justify-content:flex-start;
+  animation: overlayFade .32s cubic-bezier(.2,.9,.25,1) forwards;
+}
+@keyframes overlayFade { from { opacity:0 } to { opacity:1 } }
+
+.mobile-menu-panel{
+  width: 300px; max-width:85%; height:100vh; background: #ffffff; box-shadow: 6px 0 22px rgba(0,0,0,0.12);
+  padding: 18px 14px; display:flex; flex-direction:column; gap:16px; overflow:auto; border-right: 1px solid rgba(0,0,0,0.04);
+  transform: translateX(-100%);
+  opacity: 0;
+  animation: slideFromLeft .36s cubic-bezier(.22,.9,.28,1) forwards;
+  transform-origin: left center;
+}
+@keyframes slideFromLeft {
+  from { transform: translateX(-100%); opacity: 0 }
+  to { transform: translateX(0); opacity: 1 }
+}
+
+/* Estilos para el nuevo botón hamburguesa (SVG) */
+.hamburger-btn{
+  background-color: rgba(255,255,255,0.96);
+  color: #0b6fa0;
+  border: none;
+  border-radius: 50%;
+  width: 54px;
+  height: 54px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(11,111,160,0.08);
+  cursor: pointer;
+  padding: 6px;
+  transition: transform .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+.hamburger-btn svg{ display:block; color:inherit }
+.hamburger-btn:hover{ transform: scale(1.04); background-color: #fff }
+.hamburger-btn.open{ transform: translateY(-8px) }
+
+/* Panel: animación slide-in desde la izquierda */
+/* removed duplicate panel animation (kept slideFromLeft earlier) */
+
+/* Ajuste si el header tiene una altura mayor: empujar la burbuja hacia abajo */
+/* Nota: posición para pantallas pequeñas ya ajustada arriba en la media query */
+
+/* Ocultar panel y overlay en pantallas grandes (desktop) */
+@media (min-width: 721px){
+  .mobile-menu-overlay, .mobile-menu-panel { display: none !important }
+}
+
+/* Asegurar que la burbuja (botón) no se muestre en escritorio incluso si otras clases la activan */
+@media (min-width: 721px){
+  .mobile-hamburger, .mobile-hamburger.bubble, .hamburger-btn.bubble { display: none !important; visibility: hidden !important; }
+}
+
+/* Regla específica y final para forzar el desplazamiento visible de subcategorías */
+.mobile-menu-panel .mobile-subcategories{
+  margin-left: 28px !important; /* empujar la lista hacia la derecha */
+  padding-left: 22px !important; /* mantener espacio interior */
+  border-left-width: 2px !important;
+  border-left-color: rgba(11,111,160,0.18) !important;
+}
+.mobile-menu-panel .mobile-subcategories li::before{
+  margin-right: 24px !important; /* separar el texto del punto */
+  width:6px !important;
+  height:6px !important;
+}
+
+
