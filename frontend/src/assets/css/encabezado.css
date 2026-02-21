@@ -329,10 +329,13 @@
 
 @media (max-width:720px){
   /* Mostrar control móvil (burbuja) solo en pantallas pequeñas */
-  .mobile-hamburger{ display:flex; position:fixed; z-index:10003; left:16px; top:83px }
-  .mobile-hamburger.bubble{ min-width:50px; width:50px; height:50px; padding:6px }
-  .mobile-hamburger.bubble svg{ width:20px; height:20px }
-  .hamburger-btn{ width:48px; height:48px }
+  .mobile-hamburger{ display:flex; position:fixed; z-index:10050; left:16px; top:85px; box-sizing:border-box; padding:0; background:transparent; border:none }
+  /* visual smaller circle, but keep hit area roomy and centered */
+  .mobile-hamburger.bubble{ width:50px; height:50px; min-width:50px; padding:0; display:grid; place-items:center; border-radius:50%; background: #ffffffcc; box-shadow: 0 6px 20px rgba(0,0,0,0.12); border:2px solid rgba(0,0,0,0.06); }
+  .mobile-hamburger.bubble svg{ width:18px; height:18px }
+  .mobile-hamburger{ touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .mobile-hamburger, .mobile-hamburger *{ pointer-events: auto }
+  .hamburger-btn{ width:50px; height:50px }
 
   /* Ocultar los selects de Sección y Sucursal en la vista móvil */
   .pl-select { display: none !important }
@@ -461,8 +464,8 @@
 }
 
 /* Overlay fade + panel slide L->R */
-.mobile-menu-overlay{
-  position:fixed; inset:0; background: rgba(0,0,0,0.28); z-index:10010; display:flex; align-items:flex-start; justify-content:flex-start;
+  .mobile-menu-overlay{
+  position:fixed; inset:0; background: rgba(0,0,0,0.28); z-index:10040; display:flex; align-items:flex-start; justify-content:flex-start;
   animation: overlayFade .32s cubic-bezier(.2,.9,.25,1) forwards;
 }
 @keyframes overlayFade { from { opacity:0 } to { opacity:1 } }
@@ -473,6 +476,7 @@
   transform: translateX(-100%);
   opacity: 0;
   animation: slideFromLeft .36s cubic-bezier(.22,.9,.28,1) forwards;
+  z-index:10041; /* sit above the overlay stacking context to cover header tabs */
   transform-origin: left center;
 }
 @keyframes slideFromLeft {
