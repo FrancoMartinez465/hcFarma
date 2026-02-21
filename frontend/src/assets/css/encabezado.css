@@ -329,7 +329,10 @@
 
 @media (max-width:720px){
   /* Mostrar control móvil (burbuja) solo en pantallas pequeñas */
-  .mobile-hamburger{ display:flex; position:fixed; z-index:10001; left:16px; top:81px }
+  .mobile-hamburger{ display:flex; position:fixed; z-index:10003; left:16px; top:83px }
+  .mobile-hamburger.bubble{ min-width:50px; width:50px; height:50px; padding:6px }
+  .mobile-hamburger.bubble svg{ width:20px; height:20px }
+  .hamburger-btn{ width:48px; height:48px }
 
   /* Ocultar los selects de Sección y Sucursal en la vista móvil */
   .pl-select { display: none !important }
@@ -459,7 +462,7 @@
 
 /* Overlay fade + panel slide L->R */
 .mobile-menu-overlay{
-  position:fixed; inset:0; background: rgba(0,0,0,0.08); z-index:10000; display:flex; align-items:flex-start; justify-content:flex-start;
+  position:fixed; inset:0; background: rgba(0,0,0,0.28); z-index:10010; display:flex; align-items:flex-start; justify-content:flex-start;
   animation: overlayFade .32s cubic-bezier(.2,.9,.25,1) forwards;
 }
 @keyframes overlayFade { from { opacity:0 } to { opacity:1 } }
