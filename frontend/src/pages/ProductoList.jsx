@@ -5,6 +5,10 @@ import Encabezado from "../components/Encabezado";
 import PiePagina from "../components/PiePagina";
 import { useCart } from "../context/CartContext";
 import logo from "../assets/images/image.png";
+import TopActionButtons from "../components/TopActionButtons";
+
+
+
 
 const SECTION_OPTIONS = [
 	{ value: "todas", label: "Todas las secciones" },
@@ -358,6 +362,7 @@ export default function ProductoList() {
 	return (
 		<div className="hc-container hc-productos">
 			<Encabezado />
+			<TopActionButtons />
 
 			<div className="cart-notifications-container">
 				{notifications.map((notif) => (
