@@ -122,18 +122,63 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+
+  /* Móvil: botones en fila, centrados bajo el header. Bajarlos un poco más y quitar borde blanco. */
   .top-action-buttons {
-    top: calc(64px + 15px);
+    position: fixed;
+    /* subir 5px respecto a la versión anterior */
+    top: calc(76px + 31px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: inline-flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    width: min(420px, calc(100% - 32px));
+    padding: 6px 8px;
+     /* eliminar fondo blanco y borde */
+     background: transparent !important;
+     border: none !important;
+     /* quitar la sombra/borde grande para que no aparezca el contorno blanco */
+     box-shadow: none !important;
+    border-radius: 14px;
+    z-index: 10001;
   }
 
   .tab-btn {
-    padding: 8px 16px;
-    font-size: 14px;
-    min-width: 90px;
+    padding: 10px 20px;
+    font-size: 15px;
+    min-width: 140px;
+    flex: none;
+    border-radius: 12px;
+    text-align: center;
   }
 
   .top-action-buttons-spacer {
-    height: 64px;
+    /* aumentar el espacio reservado para evitar que el contenido quede tapado */
+    height: 120px;
+  }
+}
+
+/* Ajustes adicionales para pantallas muy pequeñas (móviles estrechos) */
+@media (max-width: 480px) {
+  .top-action-buttons {
+    /* subir 5px respecto a la versión anterior */
+    top: calc(76px + 39px);
+    width: calc(100% - 20px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 8px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .tab-btn {
+    min-width: 100px;
+    padding: 10px 12px;
+    font-size: 15px;
   }
 }
 
