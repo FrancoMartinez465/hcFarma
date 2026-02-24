@@ -41,7 +41,9 @@ const SUBCATEGORY_OPTIONS = [
 export default function ProductoList() {
 	const location = useLocation();
 	const { addToCart } = useCart();
-	const [products, setProducts] = useState([]);
+	// allProducts: array con TODOS los productos (fetch completo en cliente)
+	const [allProducts, setAllProducts] = useState([]);
+	const [totalServerItems, setTotalServerItems] = useState(null);
 
 	// Normaliza string: quita diacríticos y deja minúsculas
 	const normalizeString = (s) =>
@@ -68,6 +70,7 @@ export default function ProductoList() {
 	const [categoriesMap, setCategoriesMap] = useState({});
 	const [branchOptions] = useState(BRANCH_OPTIONS);
 	const ITEMS_PER_PAGE = 10;
+	// NOTE: traemos todos los productos al cargar y paginamos en cliente
 	const [page, setPage] = useState(1);
 
 	const selectedBranch = branchOptions.find((b) => b.value === branchFilter);
@@ -102,22 +105,16 @@ export default function ProductoList() {
 					const basePostsUrl =
 						"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts";
 
-					// Fetch categories and first page in parallel to improve TTFB
-					const firstPagePerRequest = 100; // traer hasta 100 posts en la primera carga
-
-					const postsPromise = fetch(`${basePostsUrl}?per_page=${firstPagePerRequest}&page=1&_embed=1`);
+					// Traer categorias y primera página para conocer total
 					const catsPromise = fetch(
 						"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/categories?per_page=100"
 					);
+					const firstRes = await fetch(`${basePostsUrl}?per_page=100&page=1&_embed=1`);
 
-					const [postsRes, catRes] = await Promise.all([postsPromise, catsPromise]);
-
-					if (!postsRes.ok) throw new Error("Error al cargar productos");
-					if (!catRes.ok) throw new Error("Error al cargar categorias");
-
-					const totalPages = parseInt(postsRes.headers.get("X-WP-TotalPages") || "1", 10);
-					const firstData = await postsRes.json();
-					const categoriesData = await catRes.json();
+					if (!firstRes.ok) throw new Error("Error al cargar productos");
+					const totalItems = parseInt(firstRes.headers.get("X-WP-Total") || "0", 10);
+					const firstData = await firstRes.json();
+					const categoriesData = await (await catsPromise).json();
 
 					const normalize = (s) =>
 						String(s || "")
@@ -138,6 +135,7 @@ export default function ProductoList() {
 					}, {});
 
 					setCategoriesMap(map);
+					setTotalServerItems(totalItems);
 
 					const mapBranches = (html) => {
 						if (!html) return [];
@@ -154,53 +152,32 @@ export default function ProductoList() {
 						}
 					};
 
-					// Enhance first batch and render immediately
-					const enhancedFirst = (firstData || []).map((p) => ({
-						...p,
-						_branches: mapBranches(p.content?.rendered)
-					}));
+					// Empezar con la primera página ya descargada
+					let all = (firstData || []).map((p) => ({ ...p, _branches: mapBranches(p.content?.rendered) }));
 
-					setProducts(enhancedFirst);
-					setLoading(false);
-					console.log("PRODUCTOS (inicial):", enhancedFirst.length, "totalPages WP:", totalPages);
-
-					// Fetch remaining pages in background (non-blocking)
-					if (totalPages > 1) {
-						(async () => {
-							try {
-								const remainingPages = [];
-								for (let p = 2; p <= totalPages; p++) {
-									remainingPages.push(
-										fetch(`${basePostsUrl}?per_page=${firstPagePerRequest}&page=${p}&_embed=1`).then((r) => {
-											if (!r.ok) return [];
-											return r.json();
-										})
-									);
-								}
-
-								const pagesData = await Promise.all(remainingPages);
-								const flat = pagesData.flat().filter(Boolean);
-								if (flat.length > 0) {
-									const enhancedRest = flat.map((p) => ({
-										...p,
-										_branches: mapBranches(p.content?.rendered)
-									}));
-									setProducts((prev) => [...prev, ...enhancedRest]);
-									console.log("PRODUCTOS (total tras background):", prevLength(enhancedFirst.length, enhancedRest.length));
-								}
-							} catch (e) {
-								console.warn("Carga background fallida:", e.message || e);
-							}
-						})();
+					// Calcular cuántas páginas quedan (per_page=100), y obtenerlas
+					const perPage = 100;
+					const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
+					for (let pg = 2; pg <= totalPages; pg++) {
+						try {
+							const res = await fetch(`${basePostsUrl}?per_page=${perPage}&page=${pg}&_embed=1`);
+							if (!res.ok) break;
+							const data = await res.json();
+							all = all.concat((data || []).map((p) => ({ ...p, _branches: mapBranches(p.content?.rendered) })));
+						} catch (e) {
+							console.warn('Error fetching page', pg, e.message || e);
+							break;
+						}
 					}
+
+					setAllProducts(all);
+					setLoading(false);
+					console.log('Productos cargados:', all.length, 'totalServerItems:', totalItems);
 				} catch (err) {
-					setError(err.message);
+					setError(err.message || String(err));
 					setLoading(false);
 				}
 			};
-
-			// helper to log totals without relying on outer scope
-			const prevLength = (firstLen, restLen) => firstLen + restLen;
 
 			fetchAllPosts();
 		}, []);
@@ -298,7 +275,10 @@ export default function ProductoList() {
 	};
 
 
-	const filteredProducts = products.filter((p) => {
+	// Base único de productos (todos los productos descargados)
+	const fetchedProductsFlat = allProducts;
+
+	const filteredProducts = fetchedProductsFlat.filter((p) => {
 		const normalizedQuery = (activeQuery || query).trim().toLowerCase();
 		const normalizedQueryDigits = normalizedQuery.replace(/\D/g, "");
 		const titleMatch = productMatchesQuery(p, activeQuery || query);
@@ -348,31 +328,33 @@ export default function ProductoList() {
 
 		let matchesBranch;
 		if (branchFilter === "todas") {
-			// Mostrar solo si el producto no es exclusivo de una sola sucursal
-			// y si está disponible en todas las sucursales conocidas o no tiene info.
-			matchesBranch = productBranches.length === 0 || productBranches.length === TOTAL_BRANCHES;
+			// Mostrar solo productos que estén en las 3 sucursales (ocultar los exclusivos de 1 o 2 sucursales)
+			matchesBranch = productBranches.length === TOTAL_BRANCHES;
 		} else {
 			// Para una sucursal seleccionada: mostrar si el producto lista esa sucursal
 			// o si no tiene info de sucursales (asumir disponible en todas).
 			matchesBranch = productBranches.length === 0 || productBranches.includes(branchFilter);
 		}
 
-		// Si hay una búsqueda activa (query no vacía), ignorar filtros de sección y sucursal
+		// No ignorar el filtro de sucursal durante la búsqueda: siempre aplicarlo
 		const isSearching = normalizedQuery.length > 0;
 		const finalMatchesSection = isSearching ? true : (matchesSection && matchesSub);
-		const finalMatchesBranch = isSearching ? true : matchesBranch;
+		const finalMatchesBranch = matchesBranch;
 
 		return (titleMatch || codeMatch) && finalMatchesSection && finalMatchesBranch;
 	});
 
-	// Paginación: calcular total de páginas y slice de productos a mostrar
+	// Paginación basada en los productos filtrados (cliente)
 	const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
-	const paginatedProducts = filteredProducts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
 
-	// Asegurar que la página actual esté dentro del rango cuando cambian resultados
-	useEffect(() => {
-		if (page > totalPages) setPage(1);
-	}, [filteredProducts.length, page, totalPages]);
+	// Paginación 100% en cliente: tomar slice de filteredProducts
+	const startIndex = (page - 1) * ITEMS_PER_PAGE;
+	const paginatedProducts = filteredProducts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+	// pageLoading: considerar loading general o ausencia de productos descargados
+	const pageLoading = loading && allProducts.length === 0;
+
+	// Ya no fetch por página: todos los productos se cargan al inicio en `allProducts`.
 
 	const handleSearch = () => setActiveQuery(query);
 	const handleClear = () => {
@@ -459,8 +441,8 @@ export default function ProductoList() {
 													const q = (query || "").trim();
 													if (!q) return null;
 
-													// Usar la misma lógica de coincidencia que el grid
-													const matched = products.filter((p) => productMatchesQuery(p, q));
+													// Usar la misma lógica de coincidencia que el grid (sólo entre los productos ya descargados)
+													const matched = fetchedProductsFlat.filter((p) => productMatchesQuery(p, q));
 													if (!matched || matched.length === 0) return null;
 
 													const qNorm = normalizeString(q);
@@ -568,26 +550,26 @@ export default function ProductoList() {
 							</div>
 						)}
 
-					{loading && (
-						<>
-							<p>Cargando productos...</p>
-							<div className="pl-grid">
-								{[...Array(6)].map((_, i) => (
-									<div key={i} className="pl-card pl-skeleton">
-										<div className="pl-thumb skeleton-img"></div>
-										<div className="pl-info">
-											<div className="skeleton-title"></div>
-											<div className="skeleton-price"></div>
-											<div className="skeleton-buttons"></div>
-										</div>
+					{pageLoading && (
+								<>
+									<p>Cargando productos...</p>
+									<div className="pl-grid">
+										{[...Array(6)].map((_, i) => (
+											<div key={i} className="pl-card pl-skeleton">
+												<div className="pl-thumb skeleton-img"></div>
+												<div className="pl-info">
+													<div className="skeleton-title"></div>
+													<div className="skeleton-price"></div>
+													<div className="skeleton-buttons"></div>
+												</div>
+											</div>
+										))}
 									</div>
-								))}
-							</div>
-						</>
-					)}
+								</>
+							)}
 					{error && <p>Error: {error}</p>}
 
-					{!loading && filteredProducts.length === 0 && (
+					{!pageLoading && filteredProducts.length === 0 && (
 						<div className="pl-empty-state">
 							<div className="pl-empty-state__icon" aria-hidden="true">🔎</div>
 							<h3 className="pl-empty-state__title">Sin resultados</h3>
@@ -646,7 +628,7 @@ export default function ProductoList() {
 					</div>
 
 					{/* Controles de paginación */}
-					{!loading && filteredProducts.length > 0 && (
+					{!pageLoading && totalServerItems > 0 && (
 						<div className="pl-pagination">
 							<button
 								className="btn"
