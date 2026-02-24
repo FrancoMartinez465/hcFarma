@@ -67,6 +67,8 @@ export default function ProductoList() {
 	const [subFilter, setSubFilter] = useState("todas");
 	const [categoriesMap, setCategoriesMap] = useState({});
 	const [branchOptions] = useState(BRANCH_OPTIONS);
+	const ITEMS_PER_PAGE = 10;
+	const [page, setPage] = useState(1);
 
 	const selectedBranch = branchOptions.find((b) => b.value === branchFilter);
 	const showBranchNotice = branchFilter !== "todas" && branchFilter !== "hc farma gandhi";
@@ -89,83 +91,116 @@ export default function ProductoList() {
 
 		syncFiltersFromQuery();
 	}, [location.search]);
+
+	// Reiniciar la página cuando cambian la búsqueda o los filtros
+	useEffect(() => {
+		setPage(1);
+	}, [activeQuery, sectionFilter, branchFilter, subFilter]);
 		useEffect(() => {
 			const fetchAllPosts = async () => {
-			try {
-				let allPosts = [];
-				let page = 1;
-				let totalPages = 1;
-				const basePostsUrl =
-					"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts";
+				try {
+					const basePostsUrl =
+						"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts";
 
-				do {
-					const res = await fetch(
-						`${basePostsUrl}?per_page=100&page=${page}&_embed=1`
+					// Fetch categories and first page in parallel to improve TTFB
+					const firstPagePerRequest = 100; // traer hasta 100 posts en la primera carga
+
+					const postsPromise = fetch(`${basePostsUrl}?per_page=${firstPagePerRequest}&page=1&_embed=1`);
+					const catsPromise = fetch(
+						"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/categories?per_page=100"
 					);
 
-					if (!res.ok) throw new Error("Error al cargar productos");
+					const [postsRes, catRes] = await Promise.all([postsPromise, catsPromise]);
 
-					totalPages = parseInt(res.headers.get("X-WP-TotalPages") || "1", 10);
-					const data = await res.json();
-					allPosts = [...allPosts, ...data];
-					page++;
-				} while (page <= totalPages);
+					if (!postsRes.ok) throw new Error("Error al cargar productos");
+					if (!catRes.ok) throw new Error("Error al cargar categorias");
 
-				// categorías
-				const catRes = await fetch(
-					"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/categories?per_page=100"
-				);
-				if (!catRes.ok) throw new Error("Error al cargar categorias");
-				const categoriesData = await catRes.json();
+					const totalPages = parseInt(postsRes.headers.get("X-WP-TotalPages") || "1", 10);
+					const firstData = await postsRes.json();
+					const categoriesData = await catRes.json();
 
-				const normalize = (s) =>
-					String(s || "")
-						.toLowerCase()
-						.normalize("NFD")
-						.replace(/\p{Diacritic}/gu, "")
-						.replace(/[^a-z0-9]+/g, " ")
-						.trim();
+					const normalize = (s) =>
+						String(s || "")
+							.toLowerCase()
+							.normalize("NFD")
+							.replace(/\p{Diacritic}/gu, "")
+							.replace(/[^a-z0-9]+/g, " ")
+							.trim();
 
-				const map = categoriesData.reduce((acc, cat) => {
-					acc[cat.id] = {
-						name: cat.name,
-						slug: cat.slug,
-						normName: normalize(cat.name),
-						normSlug: normalize(cat.slug)
+					const map = categoriesData.reduce((acc, cat) => {
+						acc[cat.id] = {
+							name: cat.name,
+							slug: cat.slug,
+							normName: normalize(cat.name),
+							normSlug: normalize(cat.slug)
+						};
+						return acc;
+					}, {});
+
+					setCategoriesMap(map);
+
+					const mapBranches = (html) => {
+						if (!html) return [];
+						try {
+							const snippet = String(html).slice(0, 1000);
+							const text = snippet.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
+							const branches = new Set();
+							if (/\bgandhi\b/.test(text)) branches.add("hc farma gandhi");
+							if (/\bruta\s*20\b/.test(text)) branches.add("hc farma ruta 20");
+							if (/\bsan\s*martin\b/.test(text)) branches.add("hc farma san martin");
+							return Array.from(branches);
+						} catch (e) {
+							return [];
+						}
 					};
-					return acc;
-				}, {});
 
-				setCategoriesMap(map);
+					// Enhance first batch and render immediately
+					const enhancedFirst = (firstData || []).map((p) => ({
+						...p,
+						_branches: mapBranches(p.content?.rendered)
+					}));
 
-				const mapBranches = (html) => {
-					if (!html) return [];
-					try {
-						const snippet = String(html).slice(0, 1000);
-						const text = snippet.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
-						const branches = new Set();
-						if (/\bgandhi\b/.test(text)) branches.add("hc farma gandhi");
-						if (/\bruta\s*20\b/.test(text)) branches.add("hc farma ruta 20");
-						if (/\bsan\s*martin\b/.test(text)) branches.add("hc farma san martin");
-						return Array.from(branches);
-					} catch (e) {
-						return [];
+					setProducts(enhancedFirst);
+					setLoading(false);
+					console.log("PRODUCTOS (inicial):", enhancedFirst.length, "totalPages WP:", totalPages);
+
+					// Fetch remaining pages in background (non-blocking)
+					if (totalPages > 1) {
+						(async () => {
+							try {
+								const remainingPages = [];
+								for (let p = 2; p <= totalPages; p++) {
+									remainingPages.push(
+										fetch(`${basePostsUrl}?per_page=${firstPagePerRequest}&page=${p}&_embed=1`).then((r) => {
+											if (!r.ok) return [];
+											return r.json();
+										})
+									);
+								}
+
+								const pagesData = await Promise.all(remainingPages);
+								const flat = pagesData.flat().filter(Boolean);
+								if (flat.length > 0) {
+									const enhancedRest = flat.map((p) => ({
+										...p,
+										_branches: mapBranches(p.content?.rendered)
+									}));
+									setProducts((prev) => [...prev, ...enhancedRest]);
+									console.log("PRODUCTOS (total tras background):", prevLength(enhancedFirst.length, enhancedRest.length));
+								}
+							} catch (e) {
+								console.warn("Carga background fallida:", e.message || e);
+							}
+						})();
 					}
-				};
+				} catch (err) {
+					setError(err.message);
+					setLoading(false);
+				}
+			};
 
-				const enhanced = allPosts.map((p) => ({
-					...p,
-					_branches: mapBranches(p.content?.rendered)
-				}));
-
-				setProducts(enhanced);
-				console.log("TOTAL PRODUCTOS:", enhanced.length);
-				setLoading(false);
-			} catch (err) {
-				setError(err.message);
-				setLoading(false);
-			}
-		};
+			// helper to log totals without relying on outer scope
+			const prevLength = (firstLen, restLen) => firstLen + restLen;
 
 			fetchAllPosts();
 		}, []);
@@ -330,6 +365,15 @@ export default function ProductoList() {
 		return (titleMatch || codeMatch) && finalMatchesSection && finalMatchesBranch;
 	});
 
+	// Paginación: calcular total de páginas y slice de productos a mostrar
+	const totalPages = Math.max(1, Math.ceil(filteredProducts.length / ITEMS_PER_PAGE));
+	const paginatedProducts = filteredProducts.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+
+	// Asegurar que la página actual esté dentro del rango cuando cambian resultados
+	useEffect(() => {
+		if (page > totalPages) setPage(1);
+	}, [filteredProducts.length, page, totalPages]);
+
 	const handleSearch = () => setActiveQuery(query);
 	const handleClear = () => {
 		setQuery("");
@@ -337,6 +381,7 @@ export default function ProductoList() {
 		setSectionFilter("todas");
 		setBranchFilter("todas");
 		setSubFilter("todas");
+		setPage(1);
 	};
 
 	const handleAddToCart = (product) => {
@@ -553,7 +598,7 @@ export default function ProductoList() {
 					)}
 
 					<div className="pl-grid">
-						{filteredProducts.map((p) => {
+						{paginatedProducts.map((p) => {
 							const image = getImage(p.content?.rendered);
 							const plainTitle = decodeToPlainText(p.title?.rendered);
 							const productBranches = p._branches || [];
@@ -599,6 +644,27 @@ export default function ProductoList() {
 							);
 						})}
 					</div>
+
+					{/* Controles de paginación */}
+					{!loading && filteredProducts.length > 0 && (
+						<div className="pl-pagination">
+							<button
+								className="btn"
+								onClick={() => setPage((s) => Math.max(1, s - 1))}
+								disabled={page <= 1}
+							>
+								Anterior
+							</button>
+							<span className="pl-pagination-info">Página {page} de {totalPages}</span>
+							<button
+								className="btn"
+								onClick={() => setPage((s) => Math.min(totalPages, s + 1))}
+								disabled={page >= totalPages}
+							>
+								Siguiente
+							</button>
+						</div>
+					)}
 
 				</section>
 			</main>

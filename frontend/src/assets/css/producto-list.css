@@ -799,6 +799,74 @@
   height: 180px;
 }
 
+/* Paginación: centrado y diseño coherente */
+.pl-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin:20px 0 36px;
+  width:100%;
+  box-sizing:border-box;
+}
+
+.pl-pagination .btn{
+  min-width:110px;
+  height:44px;
+  padding:8px 18px;
+  border-radius:999px;
+  background: linear-gradient(180deg, #ffffff 0%, #f4fbff 100%);
+  border: 1.5px solid rgba(11,107,191,0.12);
+  color:#0b6bbf;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow: 0 8px 20px rgba(11,107,191,0.08);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.pl-pagination .btn:focus{
+  outline: 3px solid rgba(11,107,191,0.12);
+  outline-offset: 3px;
+}
+
+.pl-pagination .btn:active:not(:disabled){
+  transform: translateY(1px) scale(0.995);
+}
+
+.pl-pagination .btn:disabled{
+  opacity:0.55;
+  cursor:not-allowed;
+  box-shadow: none;
+  filter: grayscale(0.04);
+}
+
+.pl-pagination .btn:hover:not(:disabled){
+  transform: translateY(-3px);
+  background: linear-gradient(180deg, #f0f8ff 0%, #eaf9ff 100%);
+  border-color: #7dd3fc;
+  box-shadow: 0 12px 28px rgba(11,107,191,0.12);
+}
+
+.pl-pagination-info{
+  font-weight:700;
+  color:#0b213f;
+  font-size:14px;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(11,107,191,0.04);
+  border: 1px solid rgba(11,107,191,0.03);
+}
+
+@media (max-width:480px){
+  .pl-pagination{ gap:10px; margin:14px 0; }
+  .pl-pagination .btn{ min-width:92px; height:40px; font-size:13px; padding:8px 12px; }
+  .pl-pagination-info{ font-size:13px; padding:6px 10px; }
+}
+
 /* Hover enhancements: más vivo y precio destacado */
 .pl-card {
   transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1),
