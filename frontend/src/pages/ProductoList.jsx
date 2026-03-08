@@ -112,7 +112,7 @@ export default function ProductoList() {
 				try {
 					const STOREFRONT_BASE = import.meta.env.DEV
 						? '/wp-json/wc/store/products'
-						: 'https://hcfarma.com.ar/wp-json/wc/store/products';
+						: 'https://api.hcfarma.com.ar/wp-json/wc/store/products';
 
 					const res = await fetch(`${STOREFRONT_BASE}?per_page=100`);
 
