@@ -103,11 +103,10 @@ export default function ProductoList() {
 			const fetchAllPosts = async () => {
 				try {
 					const basePostsUrl =
-						"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/posts";
-
-					// Traer categorias y primera página para conocer total
+					"https://hcfarma.com.ar/wp-json/wp/v2/product";
+					// Traer categorías de productos (product_cat) y primera página para conocer total
 					const catsPromise = fetch(
-						"https://public-api.wordpress.com/wp/v2/sites/hcfarma.wordpress.com/categories?per_page=100"
+						"https://hcfarma.com.ar/wp-json/wp/v2/product_cat?per_page=100"
 					);
 					const firstRes = await fetch(`${basePostsUrl}?per_page=100&page=1&_embed=1`);
 
@@ -293,7 +292,7 @@ export default function ProductoList() {
 		}
 
 		// Obtener categorías normalizadas (name y slug)
-		const categoryNames = (p.categories || [])
+		const categoryNames = (p.product_cat || [])
 			.map((id) => categoriesMap[id])
 			.filter(Boolean)
 			.flatMap((c) => [c.normName, c.normSlug]);
@@ -328,8 +327,7 @@ export default function ProductoList() {
 
 		let matchesBranch;
 		if (branchFilter === "todas") {
-			// Mostrar solo productos que estén en las 3 sucursales (ocultar los exclusivos de 1 o 2 sucursales)
-			matchesBranch = productBranches.length === TOTAL_BRANCHES;
+			matchesBranch = true;
 		} else {
 			// Para una sucursal seleccionada: mostrar si el producto lista esa sucursal
 			// o si no tiene info de sucursales (asumir disponible en todas).
