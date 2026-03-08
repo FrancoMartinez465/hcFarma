@@ -11,7 +11,7 @@ export default defineConfig({
     proxy: {
       // Proxyear llamadas a /wp-json hacia el backend para evitar CORS en desarrollo
       '/wp-json': {
-        target: 'https://hcfarma.com.ar',
+        target: 'https://api.hcfarma.com.ar', // <--- ¡Acá está el cambio clave!
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path
