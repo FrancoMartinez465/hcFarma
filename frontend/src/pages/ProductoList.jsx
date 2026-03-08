@@ -54,8 +54,16 @@ export default function ProductoList() {
 			.replace(/[^a-z0-9]+/g, " ")
 			.trim();
 
-	// Obtener imagen principal desde HTML o usar logo por defecto
-	const getImage = (html) => html?.match(/<img[^>]+src="([^"]+)"/)?.[1] || logo;
+	// Obtener imagen principal desde objeto producto (Store API) o usar logo por defecto
+	const getImage = (product) => {
+		if (!product) return logo;
+		if (product._image) return product._image;
+		if (product.images && product.images[0]) return product.images[0].src || product.images[0].url;
+		if (product.featured_media_url) return product.featured_media_url;
+		// antiguo payload WP REST
+		if (product._embedded && product._embedded['wp:attachment'] && product._embedded['wp:attachment'][0]) return product._embedded['wp:attachment'][0].source_url;
+		return logo;
+	};
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState(null);
 	const [query, setQuery] = useState("");
@@ -100,85 +108,105 @@ export default function ProductoList() {
 		setPage(1);
 	}, [activeQuery, sectionFilter, branchFilter, subFilter]);
 		useEffect(() => {
-			const fetchAllPosts = async () => {
+			const fetchAllProducts = async () => {
 				try {
-					const basePostsUrl =
-					"https://hcfarma.com.ar/wp-json/wp/v2/product";
-					// Traer categorías de productos (product_cat) y primera página para conocer total
-					const catsPromise = fetch(
-						"https://hcfarma.com.ar/wp-json/wp/v2/product_cat?per_page=100"
-					);
-					const firstRes = await fetch(`${basePostsUrl}?per_page=100&page=1&_embed=1`);
+					const STOREFRONT_BASE = import.meta.env.DEV
+						? '/wp-json/wc/store/products'
+						: 'https://hcfarma.com.ar/wp-json/wc/store/products';
 
-					if (!firstRes.ok) throw new Error("Error al cargar productos");
-					const totalItems = parseInt(firstRes.headers.get("X-WP-Total") || "0", 10);
-					const firstData = await firstRes.json();
-					const categoriesData = await (await catsPromise).json();
+					const res = await fetch(`${STOREFRONT_BASE}?per_page=100`);
 
-					const normalize = (s) =>
-						String(s || "")
-							.toLowerCase()
-							.normalize("NFD")
-							.replace(/\p{Diacritic}/gu, "")
-							.replace(/[^a-z0-9]+/g, " ")
-							.trim();
+					if (!res.ok) throw new Error("Error al cargar productos");
 
-					const map = categoriesData.reduce((acc, cat) => {
-						acc[cat.id] = {
-							name: cat.name,
-							slug: cat.slug,
-							normName: normalize(cat.name),
-							normSlug: normalize(cat.slug)
-						};
-						return acc;
-					}, {});
+					const data = await res.json();
 
-					setCategoriesMap(map);
-					setTotalServerItems(totalItems);
+					const mapBranches = (description) => {
+						if (!description) return [];
 
-					const mapBranches = (html) => {
-						if (!html) return [];
-						try {
-							const snippet = String(html).slice(0, 1000);
-							const text = snippet.replace(/<[^>]+>/g, " ").replace(/\u00A0/g, " ").toLowerCase();
-							const branches = new Set();
-							if (/\bgandhi\b/.test(text)) branches.add("hc farma gandhi");
-							if (/\bruta\s*20\b/.test(text)) branches.add("hc farma ruta 20");
-							if (/\bsan\s*martin\b/.test(text)) branches.add("hc farma san martin");
-							return Array.from(branches);
-						} catch (e) {
-							return [];
-						}
+						const text = String(description).replace(/<[^>]+>/g, " ").toLowerCase();
+
+						const branches = new Set();
+
+						if (text.includes("gandhi")) branches.add("hc farma gandhi");
+						if (text.includes("ruta 20")) branches.add("hc farma ruta 20");
+						if (text.includes("san martin")) branches.add("hc farma san martin");
+
+						return Array.from(branches);
 					};
 
-					// Empezar con la primera página ya descargada
-					let all = (firstData || []).map((p) => ({ ...p, _branches: mapBranches(p.content?.rendered) }));
-
-					// Calcular cuántas páginas quedan (per_page=100), y obtenerlas
-					const perPage = 100;
-					const totalPages = Math.max(1, Math.ceil(totalItems / perPage));
-					for (let pg = 2; pg <= totalPages; pg++) {
+					const formattedProducts = (data || []).map((p) => {
+						// detectar URL de imagen en varias rutas posibles
+						const imageCandidates = [];
+						if (p.images && p.images[0]) imageCandidates.push(p.images[0].src || p.images[0].url);
+						if (p.featured_media_url) imageCandidates.push(p.featured_media_url);
+						if (p.images && p.images.length) p.images.forEach(i => { if (i.src) imageCandidates.push(i.src); if (i.url) imageCandidates.push(i.url); });
+						if (p._embedded && p._embedded['wp:attachment'] && p._embedded['wp:attachment'][0]) imageCandidates.push(p._embedded['wp:attachment'][0].source_url);
+						// intentar extraer <img src="..."> desde la descripción HTML
 						try {
-							const res = await fetch(`${basePostsUrl}?per_page=${perPage}&page=${pg}&_embed=1`);
-							if (!res.ok) break;
-							const data = await res.json();
-							all = all.concat((data || []).map((p) => ({ ...p, _branches: mapBranches(p.content?.rendered) })));
+							const desc = p.description || p.short_description || '';
+							const m = String(desc).match(/<img[^>]+src=["']([^"']+)["']/i);
+							if (m && m[1]) imageCandidates.push(m[1]);
 						} catch (e) {
-							console.warn('Error fetching page', pg, e.message || e);
-							break;
+							// ignore
 						}
-					}
 
-					setAllProducts(all);
+						const imageUrl = imageCandidates.find(Boolean) || null;
+
+						const priceText = (() => {
+							// 1) precio en campos estructurados
+							if (p.price && String(p.price).trim() !== '' && String(p.price).trim() !== '0') return `$ ${p.price}`;
+							if (p.regular_price && String(p.regular_price).trim() !== '' && String(p.regular_price).trim() !== '0') return `$ ${p.regular_price}`;
+							if (p.prices && p.prices.price !== undefined && p.prices.price !== null && String(p.prices.price).trim() !== '0') {
+								const v = p.prices.price;
+								return typeof v === 'number' ? `$ ${v / 100}` : `$ ${v}`;
+							}
+							if (p.price_html) {
+								const txt = p.price_html.replace(/<[^>]+>/g, '').trim();
+								if (txt && txt !== '$0') return txt;
+							}
+
+							// 2) intentar extraer desde la descripción (ej: "<strong>Precio:</strong>$35.438,4")
+							try {
+								const desc = p.description || p.short_description || '';
+								const div = document.createElement('div');
+								div.innerHTML = desc;
+								const text = (div.textContent || div.innerText || '').replace(/\u00A0/g, ' ');
+								const m = text.match(/precio\s*[:\-]?\s*\$?\s*([0-9][0-9.,]+)/i);
+								if (m && m[1]) return `$ ${m[1].trim()}`;
+							} catch (e) {
+								// ignore
+							}
+
+							return null;
+						})();
+
+						return {
+							id: p.id,
+							title: { rendered: p.name },
+							content: { rendered: p.description || p.short_description || '' },
+							_priceText: priceText,
+							images: p.images || [],
+							_image: imageUrl,
+							_branches: mapBranches(p.description || p.short_description || '')
+						};
+					});
+
+					// Diagnostic logs
+					console.log('STORE API sample raw:', data && data[0]);
+					console.log('Mapped sample product:', formattedProducts && formattedProducts[0]);
+
+					setAllProducts(formattedProducts);
+					setTotalServerItems(formattedProducts.length);
 					setLoading(false);
-					console.log('Productos cargados:', all.length, 'totalServerItems:', totalItems);
+
+					console.log("Productos cargados:", formattedProducts.length);
 				} catch (err) {
 					setError(err.message || String(err));
 					setLoading(false);
 				}
 			};
 
-			fetchAllPosts();
+			fetchAllProducts();
 		}, []);
 
 
@@ -472,10 +500,10 @@ export default function ProductoList() {
 																to={`/producto/${p.id}`}
 																className="pl-autocomplete-item"
 																onMouseDown={(e) => e.preventDefault()}>
-																<img src={getImage(p.content?.rendered)} alt={decodeToPlainText(p.title?.rendered)} />
+																	    <img src={getImage(p)} alt={decodeToPlainText(p.title?.rendered)} />
 																<div className="pl-autocomplete-info">
 																	<div className="pl-autocomplete-title">{decodeToPlainText(p.title?.rendered)}</div>
-																	<div className="pl-autocomplete-price">{getPrice(p.content?.rendered)}</div>
+																	<div className="pl-autocomplete-price">{p._priceText || getPrice(p.content?.rendered)}</div>
 																</div>
 															</Link>
 														));
@@ -579,11 +607,11 @@ export default function ProductoList() {
 
 					<div className="pl-grid">
 						{paginatedProducts.map((p) => {
-							const image = getImage(p.content?.rendered);
+							const image = getImage(p);
 							const plainTitle = decodeToPlainText(p.title?.rendered);
 							const productBranches = p._branches || [];
 							const displayBranches = productBranches.map((b) => BRANCH_LABELS[b] || b);
-							const price = getPrice(p.content?.rendered);
+							const price = p._priceText || getPrice(p.content?.rendered);
 
 							return (
 								<article key={p.id} className="pl-card">
